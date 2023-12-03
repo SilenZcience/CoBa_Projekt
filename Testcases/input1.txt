@@ -1,0 +1,13 @@
+function main()
+    a::Integer = 1
+        b::Integer = 1
+        temp::Integer = 0
+        while a < 144
+            temp = b
+                b = a + b
+                a = temp
+                println(a)
+        end
+end
+
+main()

@@ -1,0 +1,20 @@
+function main()
+    a::Integer = --+1 + lol(3)
+        b::Integer = -2
+        temp::Integer = 3 * (4.4 + 1)
+end
+
+function lol(test::Integer)::Float64
+    return 2.3
+end
+
+function test()::Bool
+    x::Integer = 5 * 2
+    return true
+end
+
+function abc(a::String, b::Float64)
+    y::String = "a"
+end
+
+main()

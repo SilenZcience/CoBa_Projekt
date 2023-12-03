@@ -1,0 +1,5 @@
+function main()
+    a::Integer = +1 + false
+    b::Integer = true && false && true
+end
+main()
