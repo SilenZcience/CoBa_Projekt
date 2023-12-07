@@ -76,7 +76,7 @@ ERROR_TOKEN: .; // catch the unrecognized characters and redirect these errors t
 
 
 // --- Fragments ---
-fragment STRING_LITERAL: '"' ~'"'* '"';
+fragment STRING_LITERAL: '"' ~["\r\n]* '"';
 
 fragment LINE_COMMENT : '#' ~[\r\n]*;
 fragment BLOCK_COMMENT : '#=' ( BLOCK_COMMENT | . )*? '=#';

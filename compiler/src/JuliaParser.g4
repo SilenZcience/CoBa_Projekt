@@ -6,8 +6,10 @@ options {
 }
 
 
-main: main_function function* main_function_call NEWLINE* EOF;
+main: NEWLINE* structure NEWLINE* EOF;
 
+
+structure: main_function function* main_function_call;
 
 
 main_function: main_function_header function_body K_END NEWLINE;
@@ -21,14 +23,14 @@ function_body: declaration* instruction* (K_RETURN expression? NEWLINE)?;
 
 main_function_call: K_MAIN T_LPAR T_RPAR NEWLINE;
 
-function_call: IDENTIFIER T_LPAR function_argument T_RPAR;
-function_argument: expression (T_COMMA expression)*;
+function_call: IDENTIFIER T_LPAR function_argument? T_RPAR;
+function_argument: expression (T_COMMA function_argument)?;
 
 
 
 declaration: IDENTIFIER type_assignement T_EQUAL expression NEWLINE;
 
-instruction: (assignement | block_structure | control_structure | print) NEWLINE;
+instruction: (assignement | block_structure | control_structure | print | function_call) NEWLINE;
 
 assignement: IDENTIFIER T_EQUAL expression;
 block_structure: K_BEGIN NEWLINE instruction+ K_END;

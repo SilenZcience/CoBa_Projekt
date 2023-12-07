@@ -10,8 +10,8 @@ from antlr4 import *
 from src.JuliaLexer import JuliaLexer
 from src.JuliaParser import JuliaParser
 from errorListener import ErrorListener
-from typeCheckerA import TypeCheckerA
-from typeCheckerB import TypeCheckerB
+from symbolTableCreaterListener import SymbolTableCreaterListener
+from typeChecker import TypeChecker
 from typeCheckerHelper import SymbolTable
 
 def exception_handler(exception_type: type, exception, traceback,
@@ -47,12 +47,16 @@ if __name__ == '__main__':
     if error_listener.has_errors:
         sys.exit(1)
     symbol_table = SymbolTable()
+    symbolTableCreaterListener = SymbolTableCreaterListener(symbol_table)
+    typeChecker = TypeChecker(symbol_table)
     walker = ParseTreeWalker()
-    walker.walk(TypeCheckerA(symbol_table), tree)
-    for function in symbol_table.functions.values():
-        print(function.name, function.return_type, function.parameter_types)
-    if symbol_table.has_errors:
-        sys.exit(1)
-    # walker.walk(TypeCheckerB(symbol_table), tree)
+    walker.walk(symbolTableCreaterListener, tree)
+    # for function in symbol_table.functions.values():
+    #     print(function)
+    if symbolTableCreaterListener.has_errors:
+        sys.exit(2)
+    walker.walk(typeChecker, tree)
+    if typeChecker.has_errors:
+        sys.exit(3)
 
 # DEBUG: antlr4-parse .\compiler\src\JuliaLexer.g4 .\compiler\src\JuliaParser.g4 main -gui .\Testcases\input1.txt

@@ -1,7 +1,10 @@
+
 function main()
-    a::Integer = --+1 + lol(3)
+    a::Integer = --+1
         b::Integer = -2
         temp::Integer = 3 * (4.4 + 1)
+    abc("a", 5, false)
+    b =7
 end
 
 function lol(test::Integer)::Float64
@@ -13,7 +16,7 @@ function test()::Bool
     return true
 end
 
-function abc(a::String, b::Float64)
+function abc(a::String, b::Float64, c::Bool)
     y::String = "a"
 end
 
