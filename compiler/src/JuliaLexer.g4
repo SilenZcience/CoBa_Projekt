@@ -1,8 +1,5 @@
 lexer grammar JuliaLexer;
 
-// options {
-//     superClass = JuliaLexerBase;
-// }
 
 // --- Keywords ---
 K_INTEGER  : 'Integer';
@@ -54,7 +51,7 @@ T_EXCLAMATION      : '!';
 
 
 // --- Literals ---
-IDENTIFIER: [a-zA-Z_$][a-zA-Z_$0-9]*; // Any character-sequence
+IDENTIFIER: [a-zA-Z_$][a-zA-Z_$0-9]*; // Any character-sequence (Java-like)
 
 // NUMBER: INTEGER_NUMBER | FLOAT_NUMBER;
 FLOAT_NUMBER: INTEGER_NUMBER '.' INTEGER_NUMBER;

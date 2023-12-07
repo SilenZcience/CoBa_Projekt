@@ -2,13 +2,10 @@ parser grammar JuliaParser;
 
 options {
     tokenVocab = JuliaLexer;
-    // superClass = JuliaParserBase;
 }
 
 
-main: NEWLINE* structure NEWLINE* EOF;
-
-
+main: NEWLINE? structure NEWLINE? EOF;
 structure: main_function function* main_function_call;
 
 
@@ -18,8 +15,8 @@ main_function_header: K_FUNCTION K_MAIN T_LPAR T_RPAR NEWLINE;
 function: function_header function_body K_END NEWLINE;
 function_header: K_FUNCTION IDENTIFIER T_LPAR function_parameter? T_RPAR type_assignement? NEWLINE;
 function_parameter: IDENTIFIER type_assignement (T_COMMA function_parameter)?;
-function_body: declaration* instruction* (K_RETURN expression? NEWLINE)?;
-
+function_body: declaration* instruction* return_statement?;
+return_statement: K_RETURN expression? NEWLINE;
 
 main_function_call: K_MAIN T_LPAR T_RPAR NEWLINE;
 
@@ -27,14 +24,19 @@ function_call: IDENTIFIER T_LPAR function_argument? T_RPAR;
 function_argument: expression (T_COMMA function_argument)?;
 
 
-
 declaration: IDENTIFIER type_assignement T_EQUAL expression NEWLINE;
 
-instruction: (assignement | block_structure | control_structure | print | function_call) NEWLINE;
+instruction: (assignement
+             | block_structure
+             | control_structure
+             | print
+             | function_call) NEWLINE;
 
 assignement: IDENTIFIER T_EQUAL expression;
 block_structure: K_BEGIN NEWLINE instruction+ K_END;
-control_structure: if_structure | while_structure;
+control_structure: if_structure
+                 | while_structure
+                 ;
 print: K_PRINTLN T_LPAR expression T_RPAR;
 
 if_structure: K_IF bool_expression NEWLINE? instruction NEWLINE? (K_ELSE NEWLINE? instruction)? K_END;
@@ -65,8 +67,6 @@ type_element    : (INTEGER_NUMBER | FLOAT_NUMBER)
                 | (K_TRUE | K_FALSE)
                 | STRING
                 ;
-
-
 
 
 /*

@@ -1,23 +1,32 @@
 
 function main()
-    a::Integer = --+1
-        b::Integer = -2
-        temp::Integer = 3 * (4.4 + 1)
+    a::Integer = --+2 - 2
+
+        b::Integer = -2 + a
+        temp::Integer = 7 * (4 + 1)
+    x::Bool = 5 > 8
+    if a + 1 > 1
+        a = 5
+    else
+        a = 7
+    end
     abc("a", 5, false)
     b =7
 end
 
 function lol(test::Integer)::Float64
-    return 2.3
+    return 2.2
 end
 
 function test()::Bool
     x::Integer = 5 * 2
-    return true
+    y::Bool = x > 5
+    return y && true
 end
 
 function abc(a::String, b::Float64, c::Bool)
     y::String = "a"
+    return
 end
 
 main()
