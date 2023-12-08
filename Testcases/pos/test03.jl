@@ -1,4 +1,5 @@
 function main()
-println("test"#=test=#)
+println("test")
+
 end
 main()

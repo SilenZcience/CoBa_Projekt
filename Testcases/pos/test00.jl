@@ -1,3 +1,8 @@
+
+function x()
+    println("x")
+end
+
 function main()
     a::Integer = 1
         b::Integer = 1
