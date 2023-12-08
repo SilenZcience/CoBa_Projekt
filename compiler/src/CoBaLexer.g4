@@ -1,4 +1,4 @@
-lexer grammar JuliaLexer;
+lexer grammar CoBaLexer;
 
 
 // --- Keywords ---
@@ -59,12 +59,12 @@ INTEGER_NUMBER: [1-9] [0-9]* | '0'+;
 
 STRING: STRING_LITERAL;
 
-NEWLINE: OS_INDEPENDENT_NL+;
+NEWLINE: OS_INDEPENDENT_NL;
 
 
 
 // --- Skippable ---
-COMMENT   : (LINE_COMMENT | BLOCK_COMMENT) -> skip;
+COMMENT   : (BLOCK_COMMENT | LINE_COMMENT) -> skip;
 WHITESPACE: [ \t\f]+ -> skip;
 
 
@@ -75,8 +75,8 @@ ERROR_TOKEN: .; // catch the unrecognized characters and redirect these errors t
 // --- Fragments ---
 fragment STRING_LITERAL: '"' ~["\r\n]* '"';
 
-fragment LINE_COMMENT : '#' ~[\r\n]*;
-fragment BLOCK_COMMENT : '#=' ( BLOCK_COMMENT | . )*? '=#';
+fragment BLOCK_COMMENT : '#=' (BLOCK_COMMENT | .)*? '=#';
+fragment LINE_COMMENT : '#' (~[=] ~[\r\n]*)?;
 
 fragment OS_INDEPENDENT_NL: '\r'? '\n';
 

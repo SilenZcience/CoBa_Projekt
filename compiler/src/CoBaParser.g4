@@ -1,46 +1,46 @@
-parser grammar JuliaParser;
+parser grammar CoBaParser;
 
 options {
-    tokenVocab = JuliaLexer;
+    tokenVocab = CoBaLexer;
 }
 
 
-main: NEWLINE? structure NEWLINE? EOF;
-structure: main_function function* main_function_call;
+main: NEWLINE* structure NEWLINE* EOF;
+structure: function* main_function function* main_function_call;
 
 
-main_function: main_function_header function_body K_END NEWLINE;
-main_function_header: K_FUNCTION K_MAIN T_LPAR T_RPAR NEWLINE;
+main_function: main_function_header function_body K_END NEWLINE+;
+main_function_header: K_FUNCTION K_MAIN T_LPAR T_RPAR NEWLINE+;
 
-function: function_header function_body K_END NEWLINE;
-function_header: K_FUNCTION IDENTIFIER T_LPAR function_parameter? T_RPAR type_assignement? NEWLINE;
+function: function_header function_body K_END NEWLINE+;
+function_header: K_FUNCTION IDENTIFIER T_LPAR function_parameter? T_RPAR type_assignement? NEWLINE+;
 function_parameter: IDENTIFIER type_assignement (T_COMMA function_parameter)?;
 function_body: declaration* instruction* return_statement?;
-return_statement: K_RETURN expression? NEWLINE;
+return_statement: K_RETURN expression? NEWLINE+;
 
-main_function_call: K_MAIN T_LPAR T_RPAR NEWLINE;
+main_function_call: K_MAIN T_LPAR T_RPAR NEWLINE+;
 
-function_call: IDENTIFIER T_LPAR function_argument? T_RPAR;
+function_call: (IDENTIFIER | K_MAIN) T_LPAR function_argument? T_RPAR;
 function_argument: expression (T_COMMA function_argument)?;
 
 
-declaration: IDENTIFIER type_assignement T_EQUAL expression NEWLINE;
+declaration: IDENTIFIER type_assignement T_EQUAL expression NEWLINE+;
 
 instruction: (assignement
              | block_structure
              | control_structure
              | print
-             | function_call) NEWLINE;
+             | function_call) NEWLINE+;
 
 assignement: IDENTIFIER T_EQUAL expression;
-block_structure: K_BEGIN NEWLINE instruction+ K_END;
+block_structure: K_BEGIN NEWLINE+ instruction+ K_END;
 control_structure: if_structure
                  | while_structure
                  ;
 print: K_PRINTLN T_LPAR expression T_RPAR;
 
-if_structure: K_IF bool_expression NEWLINE? instruction NEWLINE? (K_ELSE NEWLINE? instruction)? K_END;
-while_structure: K_WHILE bool_expression NEWLINE? instruction+ K_END;
+if_structure: K_IF bool_expression NEWLINE* instruction NEWLINE* (K_ELSE NEWLINE* instruction)? K_END;
+while_structure: K_WHILE bool_expression NEWLINE* instruction+ K_END;
 
 bool_expression: expression;
 expression: UNARY=(T_PLUS | T_MINUS | T_EXCLAMATION) expression
