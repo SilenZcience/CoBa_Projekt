@@ -68,7 +68,9 @@ COMMENT   : (BLOCK_COMMENT | LINE_COMMENT) -> skip;
 WHITESPACE: [ \t\f]+ -> skip;
 
 
-ERROR_TOKEN: .; // catch the unrecognized characters and redirect these errors to the parser
+// catch the unrecognized characters and redirect these errors to the parser
+// should not make a difference here!
+ERROR_TOKEN: .;
 
 
 

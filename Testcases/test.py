@@ -43,6 +43,5 @@ for file in pos_files:
 print()
 print('Failed files in pos:')
 print(failed_pos)
-print()
 print('Failed files in neg:')
 print(failed_neg)
