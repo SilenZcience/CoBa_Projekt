@@ -7,11 +7,11 @@ from antlr4.ParserRuleContext import ParserRuleContext
 try:
     from compiler.src.CoBaParser import CoBaParser
     from compiler.src.CoBaParserListener import CoBaParserListener
-    from compiler.type_checker_helper import ValidTypes, SymbolTable
+    from compiler.type_checker_helper import ValidTypes, SymbolTable, FunctionSymbol
 except ModuleNotFoundError:
     from src.CoBaParser import CoBaParser
     from src.CoBaParserListener import CoBaParserListener
-    from type_checker_helper import ValidTypes, SymbolTable
+    from type_checker_helper import ValidTypes, SymbolTable, FunctionSymbol
 
 
 class TypeStack:
@@ -62,10 +62,18 @@ class TypeChecker(CoBaParserListener):
         f_name: str = ctx.IDENTIFIER().getText()
         self.current_function = f_name
 
+    def exitFunction_body(self, ctx: CoBaParser.Function_bodyContext):
+        f_symbol: FunctionSymbol = self.symbol_table.get_function(self.current_function)
+        if f_symbol.f_type is not None and not f_symbol.has_return:
+            self.err_print(ctx, f"invalid control flow in function: '{self.current_function}', " + \
+                'missing return statement.')
 
     def exitReturn_statement(self, ctx: CoBaParser.Return_statementContext):
+        if ctx.expression() is None:
+            self.type_stack.push(None)
         r_type: str = self.type_stack.pop()
         f_type: str = self.symbol_table.get_function(self.current_function).f_type
+        self.symbol_table.add_return(self.current_function)
         if r_type != f_type:
             self.err_print(ctx, f"invalid return type of function: '{self.current_function}', " + \
                 f"expected: '{f_type}', got: '{r_type}'.")
@@ -73,9 +81,9 @@ class TypeChecker(CoBaParserListener):
     def exitFunction_call(self, ctx):
         f_name: str = (ctx.IDENTIFIER() or ctx.K_MAIN()).getText()
 
-        f_table = self.symbol_table.get_function(f_name)
+        f_table: FunctionSymbol = self.symbol_table.get_function(f_name)
         if f_table is None:
-            return self.err_print(ctx, f"unknown function called: '{f_name}'")
+            return self.err_print(ctx, f"unknown function called: '{f_name}'.")
 
         argument_type_list: list[str] = []
         current_argument = ctx.function_argument()
@@ -84,9 +92,9 @@ class TypeChecker(CoBaParserListener):
             current_argument = current_argument.function_argument()
 
         if len(argument_type_list) > len(f_table.parameter_types):
-            return self.err_print(ctx, f"too many arguments provided at function call: '{f_name}'")
+            return self.err_print(ctx, f"too many arguments provided at function call: '{f_name}'.")
         if len(argument_type_list) < len(f_table.parameter_types):
-            return self.err_print(ctx, f"too few arguments provided at function call: '{f_name}'")
+            return self.err_print(ctx, f"too few arguments provided at function call: '{f_name}'.")
 
         current_argument_count: int = 0
         current_argument = ctx.function_argument()
@@ -95,7 +103,7 @@ class TypeChecker(CoBaParserListener):
             p_type: str = f_table.parameter_types[current_argument_count]
             if p_type != a_type and (p_type != ValidTypes.Float64 or a_type != ValidTypes.Integer):
                 self.err_print(current_argument, f"wrong argument type: '{a_type}', " + \
-                    f"expected: '{p_type}'")
+                    f"expected: '{p_type}'.")
             current_argument_count += 1
             current_argument = current_argument.function_argument()
 
@@ -108,18 +116,18 @@ class TypeChecker(CoBaParserListener):
         if v_type != assigned_type and \
             (v_type != ValidTypes.Float64 or assigned_type != ValidTypes.Integer):
             self.err_print(ctx, f"wrong value type for variable: '{v_name}', " + \
-                f"expected: '{v_type}', got: '{assigned_type}'")
+                f"expected: '{v_type}', got: '{assigned_type}'.")
 
     def exitAssignement(self, ctx):
         v_name: str = ctx.IDENTIFIER().getText()
         v_type: str = self.symbol_table.get_local_variable(self.current_function, v_name)
         assigned_type: str = self.type_stack.pop()
         if v_type is None:
-            self.err_print(ctx, f"used variable without declaration: '{v_name}'")
+            self.err_print(ctx, f"used variable without declaration: '{v_name}'.")
         elif v_type != assigned_type and \
             (v_type != ValidTypes.Float64 or assigned_type != ValidTypes.Integer):
             self.err_print(ctx, f"wrong value type for variable: '{v_name}', " + \
-                f"expected: '{v_type}', got: '{assigned_type}'")
+                f"expected: '{v_type}', got: '{assigned_type}'.")
 
     def exitBool_expression(self, ctx):
         ex_type: str = self.type_stack.pop()
@@ -205,7 +213,7 @@ class TypeChecker(CoBaParserListener):
             if v_type is not None:
                 self.type_stack.push(v_type)
             else:
-                self.err_print(ctx, f"used variable without declaration: '{ctx.IDENTIFIER()}'")
+                self.err_print(ctx, f"used variable without declaration: '{ctx.IDENTIFIER()}'.")
 
     def exitType_element(self, ctx):
         if ctx.INTEGER_NUMBER() is not None:

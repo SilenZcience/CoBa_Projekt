@@ -21,6 +21,7 @@ class FunctionSymbol:
         self.f_type: str = f_type
         self.parameter_types: list[str] = []
         self.local_variables: dict[str, str] = {}
+        self.has_return: bool = False
 
     def add_parameter(self, p_name: str, p_type: str) -> bool:
         self.parameter_types.append(p_type)
@@ -30,6 +31,12 @@ class FunctionSymbol:
         if v_name in self.local_variables:
             return False
         self.local_variables[v_name] = v_type
+        return True
+
+    def add_return(self) -> bool:
+        if self.has_return:
+            return False
+        self.has_return = True
         return True
 
     def __str__(self) -> str:
@@ -77,3 +84,9 @@ class SymbolTable:
         if f_symbol is None:
             return False
         return f_symbol.add_local_variable(v_name, v_type)
+
+    def add_return(self, f_name: str) -> bool:
+        f_symbol: FunctionSymbol = self.get_function(f_name)
+        if f_symbol is None:
+            return False
+        return f_symbol.add_return()
