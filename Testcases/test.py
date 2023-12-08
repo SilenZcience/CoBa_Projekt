@@ -41,7 +41,9 @@ for file in neg_files:
         print('FAILED')
 
 print()
-print('Failed files in pos:')
-print(failed_pos)
-print('Failed files in neg:')
-print(failed_neg)
+if failed_pos:
+    print('Failed files in pos:')
+    print(failed_pos)
+if failed_neg:
+    print('Failed files in neg:')
+    print(failed_neg)
