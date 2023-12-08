@@ -18,7 +18,7 @@ function_parameter: IDENTIFIER type_assignement (T_COMMA function_parameter)?;
 function_body: declaration* instruction* return_statement?;
 return_statement: K_RETURN expression? NEWLINE+;
 
-main_function_call: K_MAIN T_LPAR T_RPAR NEWLINE+;
+main_function_call: K_MAIN T_LPAR T_RPAR NEWLINE*;
 
 function_call: (IDENTIFIER | K_MAIN) T_LPAR function_argument? T_RPAR;
 function_argument: expression (T_COMMA function_argument)?;
