@@ -1,5 +1,9 @@
 <div id="top"></div>
 
+[![OS-Windows]][OS-Windows]
+[![OS-Linux]][OS-Linux]
+[![OS-MacOS]][OS-MacOS]
+
 <br/>
 <div align="center">
 <h2 align="center">CoBa_Projekt</h2>
@@ -118,3 +122,7 @@ Expected Directory Structure:
 [![GitHub-SilenZcience][GitHub-SilenZcience]](https://github.com/SilenZcience)
 
 [GitHub-SilenZcience]: https://img.shields.io/badge/GitHub-SilenZcience-orange
+
+[OS-Windows]: https://img.shields.io/badge/os-windows-green
+[OS-Linux]: https://img.shields.io/badge/os-linux-green
+[OS-MacOS]: https://img.shields.io/badge/os-macOS-green
