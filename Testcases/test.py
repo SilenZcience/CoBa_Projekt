@@ -29,7 +29,7 @@ for file in pos_files:
 
 
 print("Testing", neg_path)
-for file in pos_files:
+for file in neg_files:
     f_file = os.path.abspath(os.path.join(neg_path, file))
     cmd = f"python -m compiler -compile {f_file}".split(' ')
     print(file, end=': ')
