@@ -5,12 +5,12 @@ import sys
 from antlr4.ParserRuleContext import ParserRuleContext
 
 try:
-    from compiler.src.JuliaParser import JuliaParser
-    from compiler.src.JuliaParserListener import JuliaParserListener
+    from compiler.src.CoBaParser import CoBaParser
+    from compiler.src.CoBaParserListener import CoBaParserListener
     from compiler.type_checker_helper import ValidTypes, SymbolTable
 except ModuleNotFoundError:
-    from src.JuliaParser import JuliaParser
-    from src.JuliaParserListener import JuliaParserListener
+    from src.CoBaParser import CoBaParser
+    from src.CoBaParserListener import CoBaParserListener
     from type_checker_helper import ValidTypes, SymbolTable
 
 
@@ -31,7 +31,7 @@ class TypeStack:
         return str(self.type_stack)
 
 
-class TypeChecker(JuliaParserListener):
+class TypeChecker(CoBaParserListener):
     """
     Type Checker for:
     - (Boolsche) Expressions
@@ -63,7 +63,7 @@ class TypeChecker(JuliaParserListener):
         self.current_function = f_name
 
 
-    def exitReturn_statement(self, ctx: JuliaParser.Return_statementContext):
+    def exitReturn_statement(self, ctx: CoBaParser.Return_statementContext):
         r_type: str = self.type_stack.pop()
         f_type: str = self.symbol_table.get_function(self.current_function).f_type
         if r_type != f_type:
@@ -71,7 +71,7 @@ class TypeChecker(JuliaParserListener):
                 f"expected: '{f_type}', got: '{r_type}'.")
 
     def exitFunction_call(self, ctx):
-        f_name: str = ctx.IDENTIFIER().getText()
+        f_name: str = (ctx.IDENTIFIER() or ctx.K_MAIN()).getText()
 
         f_table = self.symbol_table.get_function(f_name)
         if f_table is None:
@@ -115,8 +115,8 @@ class TypeChecker(JuliaParserListener):
         v_type: str = self.symbol_table.get_local_variable(self.current_function, v_name)
         assigned_type: str = self.type_stack.pop()
         if v_type is None:
-            return self.err_print(ctx, f"used variable without declaration: '{v_name}'")
-        if v_type != assigned_type and \
+            self.err_print(ctx, f"used variable without declaration: '{v_name}'")
+        elif v_type != assigned_type and \
             (v_type != ValidTypes.Float64 or assigned_type != ValidTypes.Integer):
             self.err_print(ctx, f"wrong value type for variable: '{v_name}', " + \
                 f"expected: '{v_type}', got: '{assigned_type}'")
@@ -143,7 +143,7 @@ class TypeChecker(JuliaParserListener):
                         f"{ctx.T_EXCLAMATION()}: '{ex_type}'.")
             else:
                 self.err_print(ctx, 'Fatal Error: unknown unary operation.')
-        elif (ctx.T_STAR() or ctx.T_SLASH() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()) is not None:
+        elif (ctx.T_STAR() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()) is not None:
             ex_type_a: str = self.type_stack.pop()
             ex_type_b: str = self.type_stack.pop()
             if ex_type_a == ex_type_b == ValidTypes.Integer:
@@ -153,14 +153,24 @@ class TypeChecker(JuliaParserListener):
                 self.type_stack.push(ValidTypes.Float64)
             else:
                 self.err_print(ctx, 'unsupported operand type(s) for ' + \
-                    f"{ctx.T_STAR() or ctx.T_SLASH() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()}: " + \
+                    f"{ctx.T_STAR() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()}: " + \
                     f"'{ex_type_b}' and '{ex_type_a}'.")
+        elif ctx.T_SLASH() is not None:
+            ex_type_a: str = self.type_stack.pop()
+            ex_type_b: str = self.type_stack.pop()
+            if ex_type_a in [ValidTypes.Integer, ValidTypes.Float64] and \
+                ex_type_b in [ValidTypes.Integer, ValidTypes.Float64]:
+                self.type_stack.push(ValidTypes.Float64)
+            else:
+                self.err_print(ctx, 'unsupported operand type(s) for ' + \
+                    f"{ctx.T_SLASH()}: '{ex_type_b}' and '{ex_type_a}'.")
         elif (ctx.T_NOTEQUAL() or ctx.T_D_EQUAL()) is not None:
             ex_type_a: str = self.type_stack.pop()
             ex_type_b: str = self.type_stack.pop()
             if ex_type_a in [ValidTypes.Integer, ValidTypes.Float64] and \
                ex_type_b in [ValidTypes.Integer, ValidTypes.Float64] or \
-                   ex_type_a == ex_type_b == ValidTypes.String:
+               ex_type_a == ex_type_b == ValidTypes.String or \
+               ex_type_a == ex_type_b == ValidTypes.Boolean:
                 self.type_stack.push(ValidTypes.Boolean)
             else:
                 self.err_print(ctx, 'unsupported operand type(s) for ' + \
@@ -190,8 +200,12 @@ class TypeChecker(JuliaParserListener):
 
     def exitAtom(self, ctx):
         if ctx.IDENTIFIER() is not None:
-            self.type_stack.push(self.symbol_table.get_local_variable(
-                self.current_function, ctx.IDENTIFIER().getText()))
+            v_type = self.symbol_table.get_local_variable(
+                self.current_function, ctx.IDENTIFIER().getText())
+            if v_type is not None:
+                self.type_stack.push(v_type)
+            else:
+                self.err_print(ctx, f"used variable without declaration: '{ctx.IDENTIFIER()}'")
 
     def exitType_element(self, ctx):
         if ctx.INTEGER_NUMBER() is not None:
@@ -212,11 +226,11 @@ class TypeChecker(JuliaParserListener):
 #         print("DEBUG:", name)
 #     return print_self
 
-# possible_method_list = [method for method in dir(JuliaParserListener) if
+# possible_method_list = [method for method in dir(CoBaParserListener) if
 #                         (method.startswith('enter') or method.startswith('exit'))]
 # implemented_method_list = [method for method in dir(TypeCheckerB) if
 #                            (method.startswith('enter') or method.startswith('exit'))]
 # for method in possible_method_list:
-#     if getattr(JuliaParserListener, method) != getattr(TypeCheckerB, method, None):
+#     if getattr(CoBaParserListener, method) != getattr(TypeCheckerB, method, None):
 #         continue
     # setattr(JuliaTypeChecker, method, create_def_helper(method))

@@ -6,14 +6,14 @@ import sys
 from antlr4.ParserRuleContext import ParserRuleContext
 
 try:
-    from compiler.src.JuliaParserListener import JuliaParserListener
+    from compiler.src.CoBaParserListener import CoBaParserListener
     from compiler.type_checker_helper import SymbolTable
 except ModuleNotFoundError:
-    from src.JuliaParserListener import JuliaParserListener
+    from src.CoBaParserListener import CoBaParserListener
     from type_checker_helper import SymbolTable
 
 
-class SymbolTableGenListener(JuliaParserListener):
+class SymbolTableGenListener(CoBaParserListener):
     """
     Listener for:
     - Creating a Symbol Table of
