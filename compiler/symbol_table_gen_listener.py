@@ -5,8 +5,6 @@ define SymbolTableCreaterListener
 import sys
 from antlr4.ParserRuleContext import ParserRuleContext
 
-from compiler.src.CoBaParser import CoBaParser
-
 try:
     from compiler.src.CoBaParser import CoBaParser
     from compiler.src.CoBaParserListener import CoBaParserListener
