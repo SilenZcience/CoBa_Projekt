@@ -1,10 +1,54 @@
+<div id="top"></div>
 
-## Installation
+<br/>
+<div align="center">
+<h2 align="center">CoBa_Projekt</h2>
+   <p align="center">
+      A Julia to Jasmin compiler using ANTLR in Python as defined in the CoBa-Project.
+   </p>
+</div>
+
+<details>
+   <summary>Table of Contents</summary>
+   <ol>
+      <li>
+         <a href="#getting-started">Getting Started</a>
+         <ul>
+            <li><a href="#prerequisites">Prerequisites</a></li>
+            <li><a href="#installation">Installation</a></li>
+         </ul>
+      </li>
+      <li><a href="#usage">Usage</a></li>
+      <li><a href="#contact">Contact</a></li>
+   </ol>
+</details>
+
+## Getting Started
+
+```console
+Developed with the following Version Specifications:
+
+Java:
+openjdk 21 2023-09-19 LTS
+OpenJDK Runtime Environment Temurin-21+35 (build 21+35-LTS)
+OpenJDK 64-Bit Server VM Temurin-21+35 (build 21+35-LTS, mixed mode, sharing)
+
+Python:
+Python 3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]
+
+ANTLR:
+antlr-4.13.1-complete
+
+Julia:
+julia version 1.9.4
+```
+
+### Prerequisites
 
 - Git Clone or Download (zip) the Projekt
 
-Expected Directory Structure:
 ```
+Expected Directory Structure:
 - CoBa_Projekt
     |_ compiler
         |_ src
@@ -15,10 +59,10 @@ Expected Directory Structure:
 
 - Download the ANTLR tool itself (>= v.4.13.1):
     - [ANTLR Download Page](https://www.antlr.org/download.html)
-    - [Direct Download](https://github.com/antlr/website-antlr4/raw/gh-pages/download/antlr-4.13.1-complete.jar) (from the Github Repo)
+    - [Direct Download](https://github.com/antlr/website-antlr4/raw/gh-pages/download/antlr-4.13.1-complete.jar) (from the official Github Repo)
 
-Expected Directory Structure:
 ```
+Expected Directory Structure:
 - CoBa_Projekt
     |_ compiler
         |_ src
@@ -28,24 +72,31 @@ Expected Directory Structure:
     |_ antlr-4.13.1-complete.jar
 ```
 
-- Download Java JDK (>= v.11):
+- Download & Install Java JDK (>= v.11):
     - [Adoptium](https://adoptium.net/de/)
     - [Eclipse Temurin Releases](https://adoptium.net/de/temurin/releases/)
-- Download Python (>= v.3.10):
+- Download & Install Python (>= v.3.10):
     - [Python](https://www.python.org/downloads/)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Installation
 
 - Install the Python ANTLR Module:
     - run:
     
-    ```python -m pip install antlr4-python3-runtime~=4.13.1```
+    ```console
+    python -m pip install antlr4-python3-runtime~=4.13.1
+    ```
 
 - Generate the ANTLR Lexer -and Parser:
     - run (from the 'CoBa_Projekt' direcory):
 
-    ```java -jar <antlr-*-complete.jar> -Dlanguage=Python3 ./compiler/src/CoBaLexer.g4 ./compiler/src/CoBaParser.g4 -o ./compiler/src```
+    ```console
+    java -jar ./antlr-4.13.1-complete.jar -Dlanguage=Python3 ./compiler/src/CoBaLexer.g4 ./compiler/src/CoBaParser.g4 -o ./compiler/src
+    ```
 
-
-
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Usage
 
@@ -58,3 +109,12 @@ Expected Directory Structure:
     - run
 
     ```python <main.py> -compile <file.jl>```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Contact
+
+> **SilenZcience** <br/>
+[![GitHub-SilenZcience][GitHub-SilenZcience]](https://github.com/SilenZcience)
+
+[GitHub-SilenZcience]: https://img.shields.io/badge/GitHub-SilenZcience-orange

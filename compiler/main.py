@@ -1,7 +1,7 @@
 """
 python -m pip install antlr4-python3-runtime==4.13.1
 java -jar ./antlr-4.13.1-complete.jar -Dlanguage=Python3 ./compiler/src/CoBaLexer.g4 ./compiler/src/CoBaParser.g4 -o ./compiler/src
-python ./compiler/main.py test.txt
+python ./compiler/main.py -compile test.txt
 """
 
 import sys
