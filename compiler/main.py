@@ -46,51 +46,51 @@ def status_print(msg: str, *args, **kwargs) -> None:
     print(f"Status: {msg}", *args, end='\n', file=sys.stdout, **kwargs)
 
 
-def main():
+def main() -> int:
     """
     main method - implements compiler frontend (for now)
     """
-    arg_parser = ArgParser()
+    arg_parser: ArgParser = ArgParser()
     arg_parser.parse()
     status_print('reading file', arg_parser.compile_file if (
         arg_parser.compile) else arg_parser.liveness_file
     )
     if not arg_parser.compile:
         status_print('-Error-', 'liveness is not yet implemented')
-        sys.exit(1)
+        return 1
 
     status_print('parsing...')
-    error_listener = ErrorListener()
+    error_listener: ErrorListener = ErrorListener()
 
-    input_stream = FileStream(arg_parser.compile_file, encoding='utf-8')
-    lexer = CoBaLexer(input_stream)
-    stream = CommonTokenStream(lexer)
-    parser = CoBaParser(stream)
+    input_stream: FileStream = FileStream(arg_parser.compile_file, encoding='utf-8')
+    lexer: CoBaLexer = CoBaLexer(input_stream)
+    stream: CommonTokenStream = CommonTokenStream(lexer)
+    parser: CoBaParser = CoBaParser(stream)
     parser.removeErrorListeners()
     parser.addErrorListener(error_listener)
 
-    tree = parser.main()
+    tree: CoBaParser.MainContext = parser.main()
     if error_listener.has_errors:
-        sys.exit(1)
+        return 1
     status_print('parsing successful.')
 
     status_print('typechecking...')
-    symbol_table = SymbolTable()
-    symbol_table_gen_listener = SymbolTableGenListener(symbol_table)
-    type_checker = TypeChecker(symbol_table)
-    walker = ParseTreeWalker()
+    symbol_table: SymbolTable = SymbolTable()
+    symbol_table_gen_listener: SymbolTableGenListener = SymbolTableGenListener(symbol_table)
+    type_checker: TypeChecker = TypeChecker(symbol_table)
+    walker: ParseTreeWalker = ParseTreeWalker()
 
     walker.walk(symbol_table_gen_listener, tree)
     if symbol_table_gen_listener.has_errors:
-        sys.exit(2)
+        return 2
 
     walker.walk(type_checker, tree)
     if type_checker.has_errors:
-        sys.exit(3)
+        return 3
     status_print('typechecking successful.')
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
 
 # DEBUG: antlr4-parse .\compiler\src\CoBaLexer.g4 .\compiler\src\CoBaParser.g4 main -gui .\Testcases\input1.txt

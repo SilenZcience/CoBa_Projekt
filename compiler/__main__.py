@@ -19,7 +19,7 @@ def entry_point():
     """
     run the main program.
     """
-    main.main()
+    sys.exit(main.main())
 
 if __name__ == '__main__':
     entry_point()
