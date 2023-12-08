@@ -42,7 +42,7 @@ Expected Directory Structure:
 - Generate the ANTLR Lexer -and Parser:
     - run (from the 'CoBa_Projekt' direcory):
 
-    ```java -jar <antlr-*-complete.jar> -Dlanguage=Python3 ./compiler/src/JuliaLexer.g4 ./compiler/src/JuliaParser.g4 -o ./compiler/src```
+    ```java -jar <antlr-*-complete.jar> -Dlanguage=Python3 ./compiler/src/CoBaLexer.g4 ./compiler/src/CoBaParser.g4 -o ./compiler/src```
 
 
 
