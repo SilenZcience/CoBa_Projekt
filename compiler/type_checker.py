@@ -101,7 +101,7 @@ class TypeChecker(CoBaParserListener):
         while current_argument is not None:
             a_type: str = argument_type_list[current_argument_count]
             p_type: str = f_table.parameter_types[current_argument_count]
-            if p_type != a_type and (p_type != ValidTypes.Float64 or a_type != ValidTypes.Integer):
+            if p_type != a_type:
                 self.err_print(current_argument, f"wrong argument type: '{a_type}', " + \
                     f"expected: '{p_type}'.")
             current_argument_count += 1
@@ -177,8 +177,7 @@ class TypeChecker(CoBaParserListener):
             ex_type_b: str = self.type_stack.pop()
             if ex_type_a in [ValidTypes.Integer, ValidTypes.Float64] and \
                ex_type_b in [ValidTypes.Integer, ValidTypes.Float64] or \
-               ex_type_a == ex_type_b == ValidTypes.String or \
-               ex_type_a == ex_type_b == ValidTypes.Boolean:
+               ex_type_a == ex_type_b:
                 self.type_stack.push(ValidTypes.Boolean)
             else:
                 self.err_print(ctx, 'unsupported operand type(s) for ' + \
