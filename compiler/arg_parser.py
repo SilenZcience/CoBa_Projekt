@@ -40,12 +40,15 @@ class ArgParser:
         self.compile = self.compile_file is not None
         liveness = self.liveness_file is not None
 
-        if self.compile and liveness or \
-            not self.compile and not liveness:
+        if self.compile == liveness:
             raise ValueError("Please choose between '-compile' and '-liveness'")
 
+        f_path, f_ext = os.path.splitext(self.compile_file if self.compile else self.liveness_file)
+        if f_ext != '.jl':
+            print("Warning: Input File is not of type '.jl'.")
+
         if self.compile:
-            self.output_file = Path(os.path.splitext(self.compile_file)[0] + '.j')
+            self.output_file = Path(f_path + '.j')
             if os.path.isdir(self.output_file):
                 raise ValueError('Specified output file is not a file.')
             if os.path.exists(self.output_file):
