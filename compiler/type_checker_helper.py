@@ -6,10 +6,10 @@ class ValidTypes:
     """
     define all valid types (like 'type_spec' in the Parser-Grammar)
     """
-    Integer = 'Integer'
-    Float64 = 'Float64'
-    Boolean = 'Bool'
-    String  = 'String'
+    Integer: str = 'Integer'
+    Float64: str = 'Float64'
+    Boolean: str = 'Bool'
+    String : str = 'String'
 
 
 class FunctionSymbol:
@@ -40,7 +40,7 @@ class FunctionSymbol:
         return True
 
     def __str__(self) -> str:
-        s_str = f"----- function -----\n\t{self.f_name} @ {self.f_type}\n"
+        s_str: str = f"----- function -----\n\t{self.f_name} @ {self.f_type}\n"
         if self.parameter_types:
             s_str+= f"parameter types:\n\t{','.join(self.parameter_types)}\n"
         if not self.local_variables:

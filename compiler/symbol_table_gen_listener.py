@@ -6,9 +6,11 @@ import sys
 from antlr4.ParserRuleContext import ParserRuleContext
 
 try:
+    from compiler.src.CoBaParser import CoBaParser
     from compiler.src.CoBaParserListener import CoBaParserListener
     from compiler.type_checker_helper import SymbolTable
 except ModuleNotFoundError:
+    from src.CoBaParser import CoBaParser
     from src.CoBaParserListener import CoBaParserListener
     from type_checker_helper import SymbolTable
 
@@ -33,7 +35,7 @@ class SymbolTableGenListener(CoBaParserListener):
         print(*args, file=sys.stderr, flush=True, **kwargs)
         self.has_errors = True
 
-    def exitMain_function_header(self, ctx):
+    def exitMain_function_header(self, ctx: CoBaParser.Main_function_headerContext):
         f_name: str = ctx.K_MAIN().getText()
 
         if not self.symbol_table.add_function(f_name, None):
@@ -41,7 +43,7 @@ class SymbolTableGenListener(CoBaParserListener):
 
         self.current_function = f_name
 
-    def exitFunction_header(self, ctx):
+    def exitFunction_header(self, ctx: CoBaParser.Function_headerContext):
         f_name: str = ctx.IDENTIFIER().getText()
         f_type: str = ctx.type_assignement().type_spec().getText() if (
             ctx.type_assignement()) is not None else None
@@ -61,7 +63,7 @@ class SymbolTableGenListener(CoBaParserListener):
 
         self.current_function = f_name
 
-    def exitDeclaration(self, ctx):
+    def exitDeclaration(self, ctx: CoBaParser.DeclarationContext):
         v_name = ctx.IDENTIFIER().getText()
         v_type = ctx.type_assignement().type_spec().getText()
 

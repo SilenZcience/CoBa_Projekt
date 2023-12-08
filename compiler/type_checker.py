@@ -54,11 +54,11 @@ class TypeChecker(CoBaParserListener):
         print(*args, file=sys.stderr, flush=True, **kwargs)
         self.has_errors = True
 
-    def exitMain_function_header(self, ctx):
+    def exitMain_function_header(self, ctx: CoBaParser.Main_function_headerContext):
         f_name: str = ctx.K_MAIN().getText()
         self.current_function = f_name
 
-    def exitFunction_header(self, ctx):
+    def exitFunction_header(self, ctx: CoBaParser.Function_headerContext):
         f_name: str = ctx.IDENTIFIER().getText()
         self.current_function = f_name
 
@@ -78,7 +78,7 @@ class TypeChecker(CoBaParserListener):
             self.err_print(ctx, f"invalid return type of function: '{self.current_function}', " + \
                 f"expected: '{f_type}', got: '{r_type}'.")
 
-    def exitFunction_call(self, ctx):
+    def exitFunction_call(self, ctx: CoBaParser.Function_callContext):
         f_name: str = (ctx.IDENTIFIER() or ctx.K_MAIN()).getText()
 
         f_table: FunctionSymbol = self.symbol_table.get_function(f_name)
@@ -109,7 +109,7 @@ class TypeChecker(CoBaParserListener):
 
         self.type_stack.push(f_table.f_type)
 
-    def exitDeclaration(self, ctx):
+    def exitDeclaration(self, ctx: CoBaParser.DeclarationContext):
         v_name: str = ctx.IDENTIFIER().getText()
         v_type: str = ctx.type_assignement().type_spec().getText()
         assigned_type: str = self.type_stack.pop()
@@ -118,7 +118,7 @@ class TypeChecker(CoBaParserListener):
             self.err_print(ctx, f"wrong value type for variable: '{v_name}', " + \
                 f"expected: '{v_type}', got: '{assigned_type}'.")
 
-    def exitAssignement(self, ctx):
+    def exitAssignement(self, ctx: CoBaParser.AssignementContext):
         v_name: str = ctx.IDENTIFIER().getText()
         v_type: str = self.symbol_table.get_local_variable(self.current_function, v_name)
         assigned_type: str = self.type_stack.pop()
@@ -129,12 +129,12 @@ class TypeChecker(CoBaParserListener):
             self.err_print(ctx, f"wrong value type for variable: '{v_name}', " + \
                 f"expected: '{v_type}', got: '{assigned_type}'.")
 
-    def exitBool_expression(self, ctx):
+    def exitBool_expression(self, ctx: CoBaParser.Bool_expressionContext):
         ex_type: str = self.type_stack.pop()
         if ex_type != ValidTypes.Boolean:
             self.err_print(ctx, "expression must evaluate to bool type.")
 
-    def exitExpression(self, ctx):
+    def exitExpression(self, ctx: CoBaParser.ExpressionContext):
         if ctx.UNARY is not None:
             ex_type: str = self.type_stack.pop()
             if (ctx.T_PLUS() or ctx.T_MINUS()) is not None:
@@ -206,16 +206,16 @@ class TypeChecker(CoBaParserListener):
         else:
             self.err_print(ctx, 'Fatal Error: unknown expresion.')
 
-    def exitAtom(self, ctx):
+    def exitAtom(self, ctx: CoBaParser.AtomContext):
         if ctx.IDENTIFIER() is not None:
-            v_type = self.symbol_table.get_local_variable(
+            v_type: str = self.symbol_table.get_local_variable(
                 self.current_function, ctx.IDENTIFIER().getText())
             if v_type is not None:
                 self.type_stack.push(v_type)
             else:
                 self.err_print(ctx, f"used variable without declaration: '{ctx.IDENTIFIER()}'.")
 
-    def exitType_element(self, ctx):
+    def exitType_element(self, ctx: CoBaParser.Type_elementContext):
         if ctx.INTEGER_NUMBER() is not None:
             self.type_stack.push(ValidTypes.Integer)
         elif ctx.FLOAT_NUMBER() is not None:
@@ -224,9 +224,6 @@ class TypeChecker(CoBaParserListener):
             self.type_stack.push(ValidTypes.String)
         elif (ctx.K_TRUE() or ctx.K_FALSE()) is not None:
             self.type_stack.push(ValidTypes.Boolean)
-
-
-
 
 
 # def create_def_helper(name):
