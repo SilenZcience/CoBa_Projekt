@@ -5,6 +5,8 @@ define SymbolTableCreaterListener
 import sys
 from antlr4.ParserRuleContext import ParserRuleContext
 
+from compiler.src.CoBaParser import CoBaParser
+
 try:
     from compiler.src.CoBaParser import CoBaParser
     from compiler.src.CoBaParserListener import CoBaParserListener
@@ -69,3 +71,10 @@ class SymbolTableGenListener(CoBaParserListener):
 
         if not self.symbol_table.add_local_variable(self.current_function, v_name, v_type):
             self.err_print(ctx, f"duplicate variable name: '{v_name}'")
+
+    def exitAtom(self, ctx: CoBaParser.AtomContext):
+        if ctx.IDENTIFIER() is not None:
+            v_type: str = self.symbol_table.get_local_variable(
+                self.current_function, ctx.IDENTIFIER().getText())
+            if v_type is None:
+                self.err_print(ctx, f"used variable without declaration: '{ctx.IDENTIFIER()}'.")
