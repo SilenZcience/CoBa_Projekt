@@ -193,7 +193,5 @@ pyrightconfig.json
 # Generated Files
 *.interp
 *.tokens
-.antlr
-.antlr/*
-*Parser*.py
-*Lexer*.py
+.antlr/
+CoBa*.py
