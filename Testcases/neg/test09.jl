@@ -5,7 +5,7 @@ end
 
 function test(a::String, b::Integer)::Bool
     println(a)
-    return b
+    return a
 end
 
 main()

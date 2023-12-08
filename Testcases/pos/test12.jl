@@ -1,6 +1,6 @@
 
 function main()
-    a::Integer = --+2 - 2
+    a::Integer = +2 - 2
 
         b::Integer = 5
         temp::Integer = 7 * (4 + 1)
@@ -10,7 +10,7 @@ function main()
     else
         a = 7
     end
-    abc("a", 5, false)
+    abc("a", 5.0, false)
     b =7
 end
 
@@ -33,8 +33,8 @@ end
 function abc(a::String, b::Float64, c::Bool) #= ::String
      aw
      =#
-x::Integer = y
- y::Integer = 5
+x::Integer = 1
+ y::Integer = 5 + x
     return
 end # wad
 

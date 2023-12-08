@@ -1,4 +1,4 @@
-# undefined variable in declaration
+# mismatching variable types (division is always float -> simplification)
 function main()
 
 a::Integer = 6
