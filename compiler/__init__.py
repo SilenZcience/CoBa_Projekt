@@ -1,4 +1,4 @@
-"""A Julia to Jasmin compiler using ANTLR in Python."""
+"""A Julia to Jasmin compiler using ANTLR in Python as defined in the CoBa-Project."""
 
 __project__ = 'CoBa_Projekt'
 __version__ = '0.0.1'
