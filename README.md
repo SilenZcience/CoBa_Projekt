@@ -105,14 +105,14 @@ Expected Directory Structure:
 ## Usage
 
 - Use the Project as a Python Module/Package:
-    - run (from the 'CoBa_Projekt' direcory):
+    - run (from the 'CoBa_Projekt' directory):
 
     ```python -m compiler -compile <file.jl>```
 
 - Otherwise:
     - run
 
-    ```python <main.py> -compile <file.jl>```
+    ```python compiler.py -compile <file.jl>```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
