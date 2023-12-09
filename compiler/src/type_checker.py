@@ -7,11 +7,11 @@ from antlr4.ParserRuleContext import ParserRuleContext
 try:
     from compiler.src.CoBaParser import CoBaParser
     from compiler.src.CoBaParserListener import CoBaParserListener
-    from compiler.type_checker_helper import ValidTypes, SymbolTable, FunctionSymbol
+    from compiler.src.type_checker_helper import ValidTypes, SymbolTable, FunctionSymbol
 except ModuleNotFoundError:
-    from src.CoBaParser import CoBaParser
-    from src.CoBaParserListener import CoBaParserListener
-    from type_checker_helper import ValidTypes, SymbolTable, FunctionSymbol
+    from .CoBaParser import CoBaParser
+    from .CoBaParserListener import CoBaParserListener
+    from .type_checker_helper import ValidTypes, SymbolTable, FunctionSymbol
 
 
 class TypeStack:

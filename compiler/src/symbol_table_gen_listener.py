@@ -8,11 +8,11 @@ from antlr4.ParserRuleContext import ParserRuleContext
 try:
     from compiler.src.CoBaParser import CoBaParser
     from compiler.src.CoBaParserListener import CoBaParserListener
-    from compiler.type_checker_helper import SymbolTable
+    from compiler.src.type_checker_helper import SymbolTable
 except ModuleNotFoundError:
-    from src.CoBaParser import CoBaParser
-    from src.CoBaParserListener import CoBaParserListener
-    from type_checker_helper import SymbolTable
+    from .CoBaParser import CoBaParser
+    from .CoBaParserListener import CoBaParserListener
+    from .type_checker_helper import SymbolTable
 
 
 class SymbolTableGenListener(CoBaParserListener):

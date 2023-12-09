@@ -10,19 +10,19 @@ from antlr4 import FileStream, CommonTokenStream, ParseTreeWalker
 try: # package import (python -m compiler ...)
     from compiler.src.CoBaLexer import CoBaLexer
     from compiler.src.CoBaParser import CoBaParser
-    from compiler.arg_parser import ArgParser
-    from compiler.errorListener import ErrorListener
-    from compiler.symbol_table_gen_listener import SymbolTableGenListener
-    from compiler.type_checker import TypeChecker
-    from compiler.type_checker_helper import SymbolTable
+    from compiler.src.arg_parser import ArgParser
+    from compiler.src.errorListener import ErrorListener
+    from compiler.src.symbol_table_gen_listener import SymbolTableGenListener
+    from compiler.src.type_checker import TypeChecker
+    from compiler.src.type_checker_helper import SymbolTable
 except ModuleNotFoundError: # default import (python ./compiler/main.py ...)
     from src.CoBaLexer import CoBaLexer
     from src.CoBaParser import CoBaParser
-    from arg_parser import ArgParser
-    from errorListener import ErrorListener
-    from symbol_table_gen_listener import SymbolTableGenListener
-    from type_checker import TypeChecker
-    from type_checker_helper import SymbolTable
+    from src.arg_parser import ArgParser
+    from src.errorListener import ErrorListener
+    from src.symbol_table_gen_listener import SymbolTableGenListener
+    from src.type_checker import TypeChecker
+    from src.type_checker_helper import SymbolTable
 
 
 def exception_handler(exception_type: type, exception, traceback,

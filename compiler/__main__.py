@@ -6,7 +6,7 @@ import sys
 
 
 try:
-    from compiler import compiler
+    from compiler import stups_compiler
 except KeyboardInterrupt:
     sys.exit(404)
 except Exception as e:
@@ -19,7 +19,7 @@ def entry_point():
     """
     run the main program.
     """
-    sys.exit(compiler.main())
+    sys.exit(stups_compiler.main())
 
 if __name__ == '__main__':
     entry_point()
