@@ -56,8 +56,9 @@ Expected Directory Structure:
 - CoBa_Projekt
     |_ compiler
         |_ src
-            |_ ...
-        |_ main.py
+            |_ CoBaLexer.g4
+            |_ CoBaParser.g4
+        |_ compiler.py
         |_ ...
 ```
 
@@ -70,8 +71,9 @@ Expected Directory Structure:
 - CoBa_Projekt
     |_ compiler
         |_ src
-            |_ ...
-        |_ main.py
+            |_ CoBaLexer.g4
+            |_ CoBaParser.g4
+        |_ compiler.py
         |_ ...
     |_ antlr-4.13.1-complete.jar
 ```
