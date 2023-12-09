@@ -58,7 +58,7 @@ Expected Directory Structure:
         |_ src
             |_ CoBaLexer.g4
             |_ CoBaParser.g4
-        |_ compiler.py
+        |_ stups_compiler.py
         |_ ...
 ```
 
@@ -73,7 +73,7 @@ Expected Directory Structure:
         |_ src
             |_ CoBaLexer.g4
             |_ CoBaParser.g4
-        |_ compiler.py
+        |_ stups_compiler.py
         |_ ...
     |_ antlr-4.13.1-complete.jar
 ```
@@ -114,7 +114,7 @@ Expected Directory Structure:
 - Otherwise:
     - run
 
-    ```python compiler.py -compile <file.jl>```
+    ```python stups_compiler.py -compile <file.jl>```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
