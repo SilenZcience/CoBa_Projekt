@@ -34,14 +34,14 @@ instruction: (assignement
              | return_statement) NEWLINE+;
 
 assignement: IDENTIFIER T_EQUAL expression;
-block_structure: K_BEGIN NEWLINE+ instruction+ K_END;
+block_structure: K_BEGIN NEWLINE+ instruction* K_END;
 control_structure: if_structure
                  | while_structure
                  ;
 print: K_PRINTLN T_LPAR expression T_RPAR;
 
-if_structure: K_IF bool_expression NEWLINE* instruction NEWLINE* (K_ELSE NEWLINE* instruction)? K_END;
-while_structure: K_WHILE bool_expression NEWLINE* instruction+ K_END;
+if_structure: K_IF bool_expression NEWLINE* instruction* (K_ELSE NEWLINE* instruction*)? K_END;
+while_structure: K_WHILE bool_expression NEWLINE* instruction* K_END;
 
 bool_expression: expression;
 expression: UNARY=(T_PLUS | T_MINUS | T_EXCLAMATION) expression
