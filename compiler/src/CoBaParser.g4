@@ -15,8 +15,8 @@ main_function_header: K_FUNCTION K_MAIN T_LPAR T_RPAR NEWLINE+;
 function: function_header function_body K_END NEWLINE+;
 function_header: K_FUNCTION IDENTIFIER T_LPAR function_parameter? T_RPAR type_assignement? NEWLINE+;
 function_parameter: IDENTIFIER type_assignement (T_COMMA function_parameter)?;
-function_body: declaration* instruction* return_statement?;
-return_statement: K_RETURN expression? NEWLINE+;
+function_body: declaration* instruction* (return_statement NEWLINE+)?;
+return_statement: K_RETURN expression?;
 
 main_function_call: K_MAIN T_LPAR T_RPAR NEWLINE*;
 
@@ -30,7 +30,8 @@ instruction: (assignement
              | block_structure
              | control_structure
              | print
-             | function_call) NEWLINE+;
+             | function_call
+             | return_statement) NEWLINE+;
 
 assignement: IDENTIFIER T_EQUAL expression;
 block_structure: K_BEGIN NEWLINE+ instruction+ K_END;
