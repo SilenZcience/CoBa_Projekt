@@ -151,7 +151,7 @@ class TypeChecker(CoBaParserListener):
                         f"{ctx.T_EXCLAMATION()}: '{ex_type}'.")
             else:
                 self.err_print(ctx, 'Fatal Error: unknown unary operation.')
-        elif (ctx.T_STAR() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()) is not None:
+        elif (ctx.T_STAR() or ctx.T_SLASH() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()) is not None:
             ex_type_a: str = self.type_stack.pop()
             ex_type_b: str = self.type_stack.pop()
             if ex_type_a == ex_type_b == ValidTypes.Integer:
@@ -161,17 +161,8 @@ class TypeChecker(CoBaParserListener):
                 self.type_stack.push(ValidTypes.Float64)
             else:
                 self.err_print(ctx, 'unsupported operand type(s) for ' + \
-                    f"{ctx.T_STAR() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()}: " + \
+                    f"{ctx.T_STAR() or ctx.T_SLASH() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()}: " + \
                     f"'{ex_type_b}' and '{ex_type_a}'.")
-        elif ctx.T_SLASH() is not None:
-            ex_type_a: str = self.type_stack.pop()
-            ex_type_b: str = self.type_stack.pop()
-            if ex_type_a in [ValidTypes.Integer, ValidTypes.Float64] and \
-                ex_type_b in [ValidTypes.Integer, ValidTypes.Float64]:
-                self.type_stack.push(ValidTypes.Float64)
-            else:
-                self.err_print(ctx, 'unsupported operand type(s) for ' + \
-                    f"{ctx.T_SLASH()}: '{ex_type_b}' and '{ex_type_a}'.")
         elif (ctx.T_NOTEQUAL() or ctx.T_D_EQUAL()) is not None:
             ex_type_a: str = self.type_stack.pop()
             ex_type_b: str = self.type_stack.pop()
