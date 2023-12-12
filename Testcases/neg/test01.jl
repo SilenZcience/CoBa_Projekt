@@ -1,6 +1,6 @@
-# division returns float
+# no condition
 function main()
-a::Integer = 10-21/2
-println(a)
+if 
+    println("a") 
 end
 main()
