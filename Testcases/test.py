@@ -13,6 +13,7 @@ check_output = False
 failed_pos = []
 failed_neg = []
 
+CMD = 'python -m compiler -compile'.split(' ')
 CONST_SUCCESS = 'success'
 CONST_FAILED = 'FAILED'
 l_msg = ''
@@ -22,8 +23,7 @@ l_error_code = 0
 print('Testing', pos_path)
 for file in pos_files:
     f_file = os.path.abspath(os.path.join(pos_path, file))
-    cmd = f"python -m compiler -compile {f_file}".split(' ')
-    sub = subprocess.run(cmd, cwd=package_dir, capture_output=True, check=check_output)
+    sub = subprocess.run(CMD + [f_file], cwd=package_dir, capture_output=True, check=check_output)
     if l_error_code == 0:
         print('\b' * len(l_msg), end='')
         print(' ' * len(l_msg), end='')
@@ -46,8 +46,7 @@ if l_error_code == 0:
 print('\nTesting', neg_path)
 for file in neg_files:
     f_file = os.path.abspath(os.path.join(neg_path, file))
-    cmd = f"python -m compiler -compile {f_file}".split(' ')
-    sub = subprocess.run(cmd, cwd=package_dir, capture_output=True, check=check_output)
+    sub = subprocess.run(CMD + [f_file], cwd=package_dir, capture_output=True, check=check_output)
     if l_error_code != 0:
         print('\b' * len(l_msg), end='')
         print(' ' * len(l_msg), end='')
