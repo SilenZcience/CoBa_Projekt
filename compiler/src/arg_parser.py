@@ -47,7 +47,8 @@ class ArgParser:
             print("Warning: Input File is not of type '.jl'.")
 
         if self.compile:
-            self.output_file = Path(f_path + '.j')
+            if self.output_file is None:
+                self.output_file = Path(f_path + '.j')
             if os.path.isdir(self.output_file):
                 raise ValueError('Specified output file is not a file.')
             if os.path.exists(self.output_file):
