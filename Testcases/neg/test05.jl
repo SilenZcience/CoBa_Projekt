@@ -1,4 +1,4 @@
-# mismatching variable types (division is always float -> simplification)
+# function below main statement
 function main()
 
 a::Integer = 6
