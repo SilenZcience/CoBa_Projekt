@@ -1,7 +1,7 @@
 """
 python -m pip install antlr4-python3-runtime==4.13.1
 java -jar ./antlr-4.13.1-complete.jar -Dlanguage=Python3 ./compiler/src/CoBaLexer.g4 ./compiler/src/CoBaParser.g4 -o ./compiler/src
-python ./compiler/main.py -compile test.txt
+python ./compiler/stups_compiler.py -compile test.jl
 """
 
 import sys
@@ -93,4 +93,6 @@ def main() -> int:
 if __name__ == '__main__':
     sys.exit(main())
 
-# DEBUG: antlr4-parse .\compiler\src\CoBaLexer.g4 .\compiler\src\CoBaParser.g4 main -gui .\Testcases\input1.txt
+# DEBUG:
+# python -m pip install antlr4-tools
+# antlr4-parse .\compiler\src\CoBaLexer.g4 .\compiler\src\CoBaParser.g4 main -gui .\Testcases\pos\test00.jl
