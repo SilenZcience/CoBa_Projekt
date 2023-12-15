@@ -58,6 +58,7 @@ Expected Directory Structure:
         |_ src
             |_ CoBaLexer.g4
             |_ CoBaParser.g4
+            |_ ...
         |_ stups_compiler.py
         |_ ...
 ```
@@ -73,6 +74,7 @@ Expected Directory Structure:
         |_ src
             |_ CoBaLexer.g4
             |_ CoBaParser.g4
+            |_ ...
         |_ stups_compiler.py
         |_ ...
     |_ antlr-4.13.1-complete.jar
