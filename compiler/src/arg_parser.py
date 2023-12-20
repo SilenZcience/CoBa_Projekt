@@ -10,10 +10,9 @@ except ModuleNotFoundError:
 class ArgParser:
     def __init__(self) -> None:
         self.parser = ArgumentParser(description=__doc__)
-        self.compile_file: Path = None
-        self.liveness_file: Path = None
+        self.input_file: Path = None
         self.output_file: Path = None
-
+        self.debug: bool = False
         # True -> Compile
         # False -> Liveness
         self.compile: bool = True
@@ -29,20 +28,23 @@ class ArgParser:
         self.parser.add_argument('-output', type=lambda p: Path(p).absolute(),
                                  metavar='FILE',
                                  help='specify the output file.')
+        self.parser.add_argument('-debug', action='store_true')
         params = self.parser.parse_args()
 
-        self.compile_file = getattr(params, 'compile')
-        self.liveness_file = getattr(params, 'liveness')
+        compile_file: Path = getattr(params, 'compile')
+        liveness_file: Path = getattr(params, 'liveness')
         self.output_file = getattr(params, 'output')
+        self.debug = getattr(params, 'debug')
 
-
-        self.compile = self.compile_file is not None
-        liveness = self.liveness_file is not None
+        self.compile = compile_file is not None
+        liveness: bool = liveness_file is not None
 
         if self.compile == liveness:
-            raise ValueError("Please choose between '-compile' and '-liveness'")
+            raise ValueError("Please choose between '-compile' and '-liveness'.")
 
-        f_path, f_ext = os.path.splitext(self.compile_file if self.compile else self.liveness_file)
+        self.input_file = compile_file if compile_file is not None else liveness_file
+
+        f_path, f_ext = os.path.splitext(self.input_file)
         if f_ext != '.jl':
             print("Warning: Input File is not of type '.jl'.")
 

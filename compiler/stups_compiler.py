@@ -46,23 +46,31 @@ def status_print(msg: str, *args, **kwargs) -> None:
     print(f"Status: {msg}", *args, end='\n', file=sys.stdout, **kwargs)
 
 
+def debug_print(out, desc: str = '') -> None:
+    print('\x1b[31mDEBUG:', desc)
+    print('====================')
+    try:
+        if isinstance(out, dict):
+            print('\n'.join([out[item].__str__() for item in out]))
+        else:
+            print('\n'.join([item for item in out]))
+    except TypeError:
+        print(out)
+    print('====================\x1b[0m\n')
+
+
 def main() -> int:
     """
     main method - implements compiler frontend (for now)
     """
     arg_parser: ArgParser = ArgParser()
     arg_parser.parse()
-    status_print('reading file', arg_parser.compile_file if (
-        arg_parser.compile) else arg_parser.liveness_file
-    )
-    if not arg_parser.compile:
-        status_print('-Error-', 'liveness is not yet implemented')
-        return 1
+    status_print('reading file', arg_parser.input_file)
 
     status_print('parsing...')
     error_listener: ErrorListener = ErrorListener()
 
-    input_stream: FileStream = FileStream(arg_parser.compile_file, encoding='utf-8')
+    input_stream: FileStream = FileStream(arg_parser.input_file, encoding='utf-8')
     lexer: CoBaLexer = CoBaLexer(input_stream)
     stream: CommonTokenStream = CommonTokenStream(lexer)
     parser: CoBaParser = CoBaParser(stream)
@@ -81,6 +89,8 @@ def main() -> int:
     walker: ParseTreeWalker = ParseTreeWalker()
 
     walker.walk(symbol_table_gen_listener, tree)
+    if arg_parser.debug:
+        debug_print(symbol_table.functions, 'Symbol Table')
     if symbol_table_gen_listener.has_errors:
         return 2
 
@@ -88,6 +98,10 @@ def main() -> int:
     if type_checker.has_errors:
         return 3
     status_print('typechecking successful.')
+
+    if not arg_parser.compile:
+        status_print('-Error-', 'liveness is not yet implemented')
+        return 4
 
 
 if __name__ == '__main__':
