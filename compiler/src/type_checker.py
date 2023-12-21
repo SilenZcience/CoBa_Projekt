@@ -91,16 +91,16 @@ class TypeChecker(CoBaParserListener):
             argument_type_list.insert(0, self.type_stack.pop())
             current_argument = current_argument.function_argument()
 
-        if len(argument_type_list) > len(f_table.parameter_types):
+        if len(argument_type_list) > len(f_table.parameters):
             return self.err_print(ctx, f"too many arguments provided at function call: '{f_name}'.")
-        if len(argument_type_list) < len(f_table.parameter_types):
+        if len(argument_type_list) < len(f_table.parameters):
             return self.err_print(ctx, f"too few arguments provided at function call: '{f_name}'.")
 
         current_argument_count: int = 0
         current_argument = ctx.function_argument()
         while current_argument is not None:
             a_type: str = argument_type_list[current_argument_count]
-            p_type: str = f_table.parameter_types[current_argument_count]
+            p_type: str = [*f_table.parameters.values()][current_argument_count]
             if p_type != a_type:
                 self.err_print(current_argument, f"wrong argument type: '{a_type}', " + \
                     f"expected: '{p_type}'.")

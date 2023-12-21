@@ -19,12 +19,15 @@ class FunctionSymbol:
     def __init__(self, f_name: str, f_type: str) -> None:
         self.f_name: str = f_name
         self.f_type: str = f_type
-        self.parameter_types: list[str] = []
+        # dictionaries are since Python >= 3.6 in order
+        self.parameters: dict[str, str] = {}
         self.local_variables: dict[str, str] = {}
         self.has_return: bool = False
 
     def add_parameter(self, p_name: str, p_type: str) -> bool:
-        self.parameter_types.append(p_type)
+        if p_name in self.parameters:
+            return False
+        self.parameters[p_name] = p_type
         return self.add_local_variable(p_name, p_type)
 
     def add_local_variable(self, v_name: str, v_type: str) -> bool:
@@ -40,14 +43,16 @@ class FunctionSymbol:
         return True
 
     def __str__(self) -> str:
-        s_str: str = f"----- function -----\n\t{self.f_name} @ {self.f_type}\n"
-        if self.parameter_types:
-            s_str+= f"parameter types:\n\t{','.join(self.parameter_types)}\n"
+        s_str: str = f"----- function -----\n\t{self.f_name} -> {self.f_type}\n"
+        if self.parameters:
+            s_str+= 'parameters:\n'
+            for p_name, p_type in self.parameters.items():
+                s_str+= f"\t{p_name}: {p_type}"
         if not self.local_variables:
             return s_str
         s_str+= 'local variables:\n'
         for l_name, l_type in self.local_variables.items():
-            s_str+= f"\t{l_name} : {l_type}\n"
+            s_str+= f"\t{l_name}: {l_type}\n"
         return s_str
 
 
