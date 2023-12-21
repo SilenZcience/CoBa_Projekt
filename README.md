@@ -101,7 +101,7 @@ Expected Directory Structure:
     - run (from the 'CoBa_Projekt' direcory):
 
     ```console
-    java -jar ./antlr-4.13.1-complete.jar -Dlanguage=Python3 ./compiler/src/CoBaLexer.g4 ./compiler/src/CoBaParser.g4 -listener -o ./compiler/src
+    java -jar ./antlr-4.13.1-complete.jar -Dlanguage=Python3 ./compiler/src/CoBaLexer.g4 ./compiler/src/CoBaParser.g4 -listener -visitor -o ./compiler/src
     ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
