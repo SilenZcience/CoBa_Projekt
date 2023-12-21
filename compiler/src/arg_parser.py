@@ -54,4 +54,4 @@ class ArgParser:
             if os.path.isdir(self.output_file):
                 raise ValueError('Specified output file is not a file.')
             if os.path.exists(self.output_file):
-                raise ValueError('Specified output file already exists.')
+                print('Warning: Specified output file already exists:', self.output_file)
