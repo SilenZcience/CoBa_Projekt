@@ -13,7 +13,8 @@ function main()
                 a = temp
                 println(a)
         end
-    lol("a")
+    println(lol("a"))
+    x()
 end
 
 function lol(x::String)::Float64

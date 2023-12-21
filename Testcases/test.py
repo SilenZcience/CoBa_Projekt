@@ -23,6 +23,8 @@ l_error_code = 0
 print('Testing', pos_path)
 for file in pos_files:
     f_file = os.path.abspath(os.path.join(pos_path, file))
+    if f_file[-3:] != '.jl':
+        continue
     sub = subprocess.run(CMD + [f_file], cwd=package_dir, capture_output=True, check=check_output)
     if l_error_code == 0:
         print('\b' * len(l_msg), end='')
@@ -46,6 +48,8 @@ if l_error_code == 0:
 print('\nTesting', neg_path)
 for file in neg_files:
     f_file = os.path.abspath(os.path.join(neg_path, file))
+    if f_file[-3:] != '.jl':
+        continue
     sub = subprocess.run(CMD + [f_file], cwd=package_dir, capture_output=True, check=check_output)
     if l_error_code != 0:
         print('\b' * len(l_msg), end='')
