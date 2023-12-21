@@ -195,3 +195,8 @@ pyrightconfig.json
 *.tokens
 .antlr/
 CoBa*.py
+
+
+# Generated Java .class Files
+*.class
+
