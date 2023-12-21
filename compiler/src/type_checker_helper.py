@@ -47,7 +47,7 @@ class FunctionSymbol:
         if self.parameters:
             s_str+= 'parameters:\n'
             for p_name, p_type in self.parameters.items():
-                s_str+= f"\t{p_name}: {p_type}"
+                s_str+= f"\t{p_name}: {p_type}\n"
         if not self.local_variables:
             return s_str
         s_str+= 'local variables:\n'
