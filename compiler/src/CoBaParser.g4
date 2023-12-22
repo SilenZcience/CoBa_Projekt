@@ -15,7 +15,7 @@ main_function_header: K_FUNCTION K_MAIN T_LPAR T_RPAR NEWLINE+;
 function: function_header function_body K_END NEWLINE+;
 function_header: K_FUNCTION IDENTIFIER T_LPAR function_parameter? T_RPAR type_assignement? NEWLINE+;
 function_parameter: IDENTIFIER type_assignement (T_COMMA function_parameter)?;
-function_body: declaration* instruction* (return_statement NEWLINE+)?;
+function_body: declaration* instruction*? (return_statement NEWLINE+)?;
 return_statement: K_RETURN expression?;
 
 main_function_call: K_MAIN T_LPAR T_RPAR NEWLINE*;
@@ -40,16 +40,18 @@ control_structure: if_structure
                  ;
 print: K_PRINTLN T_LPAR expression? T_RPAR;
 
-if_structure: K_IF bool_expression NEWLINE* instruction* (K_ELSE NEWLINE* instruction*)? K_END;
+if_structure: K_IF bool_expression NEWLINE* then_branch (K_ELSE NEWLINE* else_branch)? K_END;
+then_branch: instruction*;
+else_branch: instruction*;
 while_structure: K_WHILE bool_expression NEWLINE* instruction* K_END;
 
 bool_expression: expression;
-expression: UNARY=(T_PLUS | T_MINUS | T_EXCLAMATION) expression
-          | expression (T_STAR | T_SLASH | T_PERCENT) expression
-          | expression (T_PLUS | T_MINUS) expression
-          | expression (T_NOTEQUAL | T_D_EQUAL | T_LESS | T_GREATER | T_LESSEQUAL | T_GREATEREQUAL) expression
-          |<assoc=right> expression T_D_AND expression
-          |<assoc=right> expression T_D_VBAR expression
+expression: UNARY=(T_PLUS | T_MINUS | T_EXCLAMATION) RIGHT=expression
+          | LEFT=expression (T_STAR | T_SLASH | T_PERCENT) RIGHT=expression
+          | LEFT=expression (T_PLUS | T_MINUS) RIGHT=expression
+          | LEFT=expression (T_NOTEQUAL | T_D_EQUAL | T_LESS | T_GREATER | T_LESSEQUAL | T_GREATEREQUAL) RIGHT=expression
+          |<assoc=right> LEFT=expression T_D_AND RIGHT=expression
+          |<assoc=right> LEFT=expression T_D_VBAR RIGHT=expression
           | function_call
           | atom
           ;
