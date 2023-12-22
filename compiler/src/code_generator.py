@@ -36,6 +36,10 @@ class CodeGenerator(CoBaParserVisitor):
 
         # self.has_errors: bool = False
 
+    def generate(self, out_file: str) -> None:
+        with open(out_file, 'w', encoding='utf-8') as f:
+            f.write(self.code)
+
     def set_var_ids(self, f_vars: dict[str, str]) -> int:
         self.variable_ids.clear()
         c_id = 0
