@@ -12,7 +12,7 @@ try: # package import (python -m compiler ...)
     from compiler.src.CoBaParser import CoBaParser
     from compiler.src.arg_parser import ArgParser
     from compiler.src.code_generator import CodeGenerator
-    from compiler.src.errorListener import ErrorListener
+    from compiler.src.error_listener import ErrorListener
     from compiler.src.symbol_table_gen_listener import SymbolTableGenListener
     from compiler.src.type_checker import TypeChecker
     from compiler.src.type_checker_helper import SymbolTable
@@ -21,7 +21,7 @@ except ModuleNotFoundError: # default import (python ./compiler/main.py ...)
     from src.CoBaParser import CoBaParser
     from src.code_generator import CodeGenerator
     from src.arg_parser import ArgParser
-    from src.errorListener import ErrorListener
+    from src.error_listener import ErrorListener
     from src.symbol_table_gen_listener import SymbolTableGenListener
     from src.type_checker import TypeChecker
     from src.type_checker_helper import SymbolTable
