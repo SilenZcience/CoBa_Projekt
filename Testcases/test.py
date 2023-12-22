@@ -1,5 +1,7 @@
 import os
 import subprocess
+import sys
+
 
 
 script_dir = os.path.dirname(__file__)
@@ -19,6 +21,32 @@ CONST_FAILED = 'FAILED'
 l_msg = ''
 l_error_code = 0
 
+ONLY_ID = -1
+if len(sys.argv) > 1:
+    ONLY_ID = int(sys.argv[1])
+
+if ONLY_ID > -1:
+    f_file = os.path.abspath(os.path.join(
+        pos_path, [file for file in pos_files if file[-3:] == '.jl'][ONLY_ID]))
+    sub = subprocess.run(CMD + [f_file, '-debug'],
+                         cwd=package_dir, capture_output=True, check=check_output)
+    print(sub.stdout.decode())
+    print(sub.stderr.decode())
+    if sub.returncode > 0:
+        sys.exit(sub.returncode)
+    sub = subprocess.run('java -jar .\jasmin.jar'.split(' ') + [f_file[:-1]],
+                         cwd=package_dir, capture_output=True, check=check_output)
+    print(sub.stdout.decode())
+    print(sub.stderr.decode())
+    if sub.returncode > 0:
+        sys.exit(sub.returncode)
+    sub = subprocess.run('java -cp .'.split(' ') + [f_file[f_file.rfind('\\')+1:-3]],
+                         cwd=package_dir, capture_output=True, check=check_output)
+    print(sub.stdout.decode())
+    print(sub.stderr.decode())
+    if sub.returncode > 0:
+        sys.exit(sub.returncode)
+    sys.exit(0)
 
 print('Testing', pos_path)
 for file in pos_files:
