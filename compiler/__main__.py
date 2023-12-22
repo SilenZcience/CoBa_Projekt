@@ -4,7 +4,6 @@ __main__
 
 import sys
 
-
 try:
     from compiler import stups_compiler
 except KeyboardInterrupt:
@@ -15,11 +14,11 @@ except Exception as e:
     sys.exit(404)
 
 
-def entry_point():
+def entry_point() -> int:
     """
     run the main program.
     """
-    sys.exit(stups_compiler.main())
+    return stups_compiler.main()
 
 if __name__ == '__main__':
-    entry_point()
+    sys.exit(entry_point())

@@ -34,7 +34,7 @@ if ONLY_ID > -1:
     print(sub.stderr.decode())
     if sub.returncode > 0:
         sys.exit(sub.returncode)
-    sub = subprocess.run('java -jar .\jasmin.jar'.split(' ') + [f_file[:-1]],
+    sub = subprocess.run('java -jar ./jasmin.jar'.split(' ') + [f_file[:-1]],
                          cwd=package_dir, capture_output=True, check=check_output)
     print(sub.stdout.decode())
     print(sub.stderr.decode())

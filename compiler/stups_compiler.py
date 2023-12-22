@@ -1,6 +1,6 @@
 """
 python -m pip install antlr4-python3-runtime==4.13.1
-java -jar ./antlr-4.13.1-complete.jar -Dlanguage=Python3 ./compiler/src/CoBaLexer.g4 ./compiler/src/CoBaParser.g4 -o ./compiler/src
+java -jar ./antlr-4.13.1-complete.jar -Dlanguage=Python3 ./compiler/grammar/CoBaLexer.g4 ./compiler/grammar/CoBaParser.g4 -listener -visitor -o ./compiler/src
 python ./compiler/stups_compiler.py -compile test.jl
 """
 
@@ -30,11 +30,11 @@ except ModuleNotFoundError: # default import (python ./compiler/main.py ...)
 def exception_handler(exception_type: type, exception, traceback,
                       debug_hook=sys.excepthook) -> None:
     """
-    custom exception handler (ignore every internal error >.<).
+    custom exception handler (ignore traceback).
     """
     try:
-        print(exception, file=sys.stderr)
-        # debug_hook(exception_type, exception, traceback)
+        # print(exception, file=sys.stderr)
+        debug_hook(exception_type, exception, traceback)
     except Exception:
         debug_hook(exception_type, exception, traceback)
 
@@ -49,11 +49,14 @@ def status_print(msg: str, *args, **kwargs) -> None:
 
 
 def debug_print(out, desc: str = '') -> None:
+    """
+    print debug info. (colored)
+    """
     print('\x1b[31mDEBUG:', desc)
     print('====================')
     try:
         if isinstance(out, dict):
-            print('\n'.join([out[item].__str__() for item in out]))
+            print('\n'.join([str(out[item]) for item in out]))
         else:
             print('\n'.join([item for item in out]))
     except TypeError:
@@ -63,7 +66,7 @@ def debug_print(out, desc: str = '') -> None:
 
 def main() -> int:
     """
-    main method - implements compiler frontend (for now)
+    main method - implements compiler
     """
     arg_parser: ArgParser = ArgParser()
     arg_parser.parse()
@@ -71,7 +74,6 @@ def main() -> int:
 
     status_print('parsing...')
     error_listener: ErrorListener = ErrorListener()
-
     input_stream: FileStream = FileStream(arg_parser.input_file, encoding='utf-8')
     lexer: CoBaLexer = CoBaLexer(input_stream)
     stream: CommonTokenStream = CommonTokenStream(lexer)
@@ -95,7 +97,6 @@ def main() -> int:
         debug_print(symbol_table.functions, 'Symbol Table')
     if symbol_table_gen_listener.has_errors:
         return 2
-
     walker.walk(type_checker, tree)
     if type_checker.has_errors:
         return 3
@@ -110,8 +111,7 @@ def main() -> int:
                                                   arg_parser.output_file.stem,
                                                   arg_parser.debug)
     code_generator.visit(tree)
-    with open(arg_parser.output_file, 'w', encoding='utf-8') as f:
-        f.write(code_generator.code)
+    code_generator.generate(arg_parser.output_file)
     status_print('generating successful.')
 
 
@@ -120,4 +120,4 @@ if __name__ == '__main__':
 
 # DEBUG:
 # python -m pip install antlr4-tools
-# antlr4-parse .\compiler\src\CoBaLexer.g4 .\compiler\src\CoBaParser.g4 main -gui .\Testcases\pos\test00.jl
+# antlr4-parse ./compiler/grammar/CoBaLexer.g4 ./compiler/grammar/CoBaParser.g4 main -gui test.jl
