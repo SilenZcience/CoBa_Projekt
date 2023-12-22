@@ -11,6 +11,7 @@ try: # package import (python -m compiler ...)
     from compiler.src.CoBaLexer import CoBaLexer
     from compiler.src.CoBaParser import CoBaParser
     from compiler.src.arg_parser import ArgParser
+    from compiler.src.code_generator import CodeGenerator
     from compiler.src.errorListener import ErrorListener
     from compiler.src.symbol_table_gen_listener import SymbolTableGenListener
     from compiler.src.type_checker import TypeChecker
@@ -18,6 +19,7 @@ try: # package import (python -m compiler ...)
 except ModuleNotFoundError: # default import (python ./compiler/main.py ...)
     from src.CoBaLexer import CoBaLexer
     from src.CoBaParser import CoBaParser
+    from src.code_generator import CodeGenerator
     from src.arg_parser import ArgParser
     from src.errorListener import ErrorListener
     from src.symbol_table_gen_listener import SymbolTableGenListener
@@ -102,6 +104,15 @@ def main() -> int:
     if not arg_parser.compile:
         status_print('-Error-', 'liveness is not yet implemented')
         return 4
+
+    status_print('generating...')
+    code_generator: CodeGenerator = CodeGenerator(symbol_table,
+                                                  arg_parser.output_file.stem,
+                                                  arg_parser.debug)
+    code_generator.visit(tree)
+    with open(arg_parser.output_file, 'w', encoding='utf-8') as f:
+        f.write(code_generator.code)
+    status_print('generating successful.')
 
 
 if __name__ == '__main__':
