@@ -56,9 +56,10 @@ Expected Directory Structure:
 - CoBa_Projekt
     |_ compiler
         |_ src
+            |_ ...
+        |_ grammar
             |_ CoBaLexer.g4
             |_ CoBaParser.g4
-            |_ ...
         |_ stups_compiler.py
         |_ ...
 ```
@@ -72,9 +73,10 @@ Expected Directory Structure:
 - CoBa_Projekt
     |_ compiler
         |_ src
+            |_ ...
+        |_ grammar
             |_ CoBaLexer.g4
             |_ CoBaParser.g4
-            |_ ...
         |_ stups_compiler.py
         |_ ...
     |_ antlr-4.13.1-complete.jar
@@ -101,7 +103,7 @@ Expected Directory Structure:
     - run (from the 'CoBa_Projekt' direcory):
 
     ```console
-    java -jar ./antlr-4.13.1-complete.jar -Dlanguage=Python3 ./compiler/src/CoBaLexer.g4 ./compiler/src/CoBaParser.g4 -listener -visitor -o ./compiler/src
+    java -jar ./antlr-4.13.1-complete.jar -Dlanguage=Python3 ./compiler/grammar/CoBaLexer.g4 ./compiler/grammar/CoBaParser.g4 -listener -visitor -o ./compiler/src
     ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
