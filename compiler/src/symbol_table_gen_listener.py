@@ -1,5 +1,5 @@
 """
-define SymbolTableCreaterListener
+define SymbolTableGenListener
 """
 
 import sys
@@ -35,7 +35,7 @@ class SymbolTableGenListener(CoBaParserListener):
         print(*args, file=sys.stderr, flush=True, **kwargs)
         self.has_errors = True
 
-    def exitMain_function_header(self, ctx: CoBaParser.Main_function_headerContext):
+    def exitMain_function_header(self, ctx: CoBaParser.Main_function_headerContext) -> None:
         f_name: str = ctx.K_MAIN().getText()
 
         if not self.symbol_table.add_function(f_name, None):
@@ -43,7 +43,7 @@ class SymbolTableGenListener(CoBaParserListener):
 
         self.current_function = f_name
 
-    def exitFunction_header(self, ctx: CoBaParser.Function_headerContext):
+    def exitFunction_header(self, ctx: CoBaParser.Function_headerContext) -> None:
         f_name: str = ctx.IDENTIFIER().getText()
         f_type: str = ctx.type_assignement().type_spec().getText() if (
             ctx.type_assignement()) is not None else None
@@ -51,6 +51,7 @@ class SymbolTableGenListener(CoBaParserListener):
         if not self.symbol_table.add_function(f_name, f_type):
             self.err_print(ctx, f"duplicate function name: '{f_name}'.")
 
+        # add the parameters:
         current_parameter = ctx.function_parameter()
         while current_parameter is not None:
             current_name: str = current_parameter.IDENTIFIER().getText()
@@ -58,19 +59,18 @@ class SymbolTableGenListener(CoBaParserListener):
             if not self.symbol_table.add_parameter(f_name, current_name, current_type):
                 self.err_print(current_parameter, 'duplicate variable name: ' + \
                     f"'{current_name}' in scope '{f_name}'")
-
             current_parameter = current_parameter.function_parameter()
 
         self.current_function = f_name
 
-    def exitDeclaration(self, ctx: CoBaParser.DeclarationContext):
+    def exitDeclaration(self, ctx: CoBaParser.DeclarationContext) -> None:
         v_name = ctx.IDENTIFIER().getText()
         v_type = ctx.type_assignement().type_spec().getText()
 
         if not self.symbol_table.add_local_variable(self.current_function, v_name, v_type):
             self.err_print(ctx, f"duplicate variable name: '{v_name}'")
 
-    def exitAtom(self, ctx: CoBaParser.AtomContext):
+    def exitAtom(self, ctx: CoBaParser.AtomContext) -> None:
         if ctx.IDENTIFIER() is not None:
             v_type: str = self.symbol_table.get_local_variable(
                 self.current_function, ctx.IDENTIFIER().getText())

@@ -1,5 +1,5 @@
 """
-defines helpful utility for the typechecker.
+defines helpful utility for the typechecker/code-generator.
 """
 
 class ValidTypes:
@@ -19,24 +19,33 @@ class FunctionSymbol:
     def __init__(self, f_name: str, f_type: str) -> None:
         self.f_name: str = f_name
         self.f_type: str = f_type
-        # dictionaries are since Python >= 3.6 in order
+        # dictionaries are since Python >= 3.6 in order (important)
         self.parameters: dict[str, str] = {}
         self.local_variables: dict[str, str] = {}
         self.has_return: bool = False
 
     def add_parameter(self, p_name: str, p_type: str) -> bool:
+        """
+        add parameter (parameters are also local variables)
+        """
         if p_name in self.parameters:
             return False
         self.parameters[p_name] = p_type
         return self.add_local_variable(p_name, p_type)
 
     def add_local_variable(self, v_name: str, v_type: str) -> bool:
+        """
+        add local variable
+        """
         if v_name in self.local_variables:
             return False
         self.local_variables[v_name] = v_type
         return True
 
     def add_return(self) -> bool:
+        """
+        check if cuntion has a return statement
+        """
         if self.has_return:
             return False
         self.has_return = True
