@@ -73,33 +73,51 @@ class SymbolTable:
         self.functions: dict[str, FunctionSymbol] = {}
 
     def add_function(self, f_name: str, f_type: str) -> bool:
+        """
+        add a function via name and type
+        """
         if f_name in self.functions:
             return False
         self.functions[f_name] = FunctionSymbol(f_name, f_type)
         return True
 
     def get_function(self, f_name: str) -> FunctionSymbol:
+        """
+        get a function by name
+        """
         return self.functions.get(f_name)
 
     def get_local_variable(self, f_name: str, v_name: str) -> str:
+        """
+        get a local variable by function- and variable name
+        """
         f_symbol: FunctionSymbol = self.get_function(f_name)
         if f_symbol is None:
             return None
         return f_symbol.local_variables.get(v_name)
 
     def add_parameter(self, f_name: str, v_name: str, v_type: str) -> bool:
+        """
+        add a parameter by function name and parameter name and type
+        """
         f_symbol: FunctionSymbol = self.get_function(f_name)
         if f_symbol is None:
             return False
         return f_symbol.add_parameter(v_name, v_type)
 
     def add_local_variable(self, f_name: str, v_name: str, v_type: str) -> bool:
+        """
+        add a local variable by function name and parameter name and type
+        """
         f_symbol: FunctionSymbol = self.get_function(f_name)
         if f_symbol is None:
             return False
         return f_symbol.add_local_variable(v_name, v_type)
 
     def add_return(self, f_name: str) -> bool:
+        """
+        add a return indicator by function name
+        """
         f_symbol: FunctionSymbol = self.get_function(f_name)
         if f_symbol is None:
             return False

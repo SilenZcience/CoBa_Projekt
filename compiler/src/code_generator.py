@@ -1,6 +1,8 @@
+"""
+define the CodeGenerator
+"""
 
 from antlr4.ParserRuleContext import ParserRuleContext
-from compiler.src.CoBaParser import CoBaParser
 
 try:
     from compiler.src.CoBaParser import CoBaParser
@@ -13,6 +15,9 @@ except ModuleNotFoundError:
 
 
 def gen_next_label_id() -> str:
+    """
+    generator incrementing numbers for distinguishable markers/labels
+    """
     id_ = 0
     while True:
         yield str(id_)
@@ -21,7 +26,7 @@ def gen_next_label_id() -> str:
 
 class CodeGenerator(CoBaParserVisitor):
     """
-    
+    generate Jasmin ByteCode.
     """
     def __init__(self, symbol_table: SymbolTable, file_name: str, debug: bool) -> None:
         self.symbol_table: SymbolTable = symbol_table
@@ -37,10 +42,16 @@ class CodeGenerator(CoBaParserVisitor):
         # self.has_errors: bool = False
 
     def generate(self, out_file: str) -> None:
+        """
+        write the bytecode to a file.
+        """
         with open(out_file, 'w', encoding='utf-8') as f:
             f.write(self.code)
 
     def set_var_ids(self, f_vars: dict[str, str]) -> int:
+        """
+        assign each local variable a distinguishable number/id
+        """
         self.variable_ids.clear()
         c_id = 0
         for v_name, v_type in f_vars.items():

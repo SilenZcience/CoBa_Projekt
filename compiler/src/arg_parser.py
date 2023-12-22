@@ -1,3 +1,7 @@
+"""
+define console menu - ArgParser
+"""
+
 import os
 from argparse import ArgumentParser
 from pathlib import Path
@@ -8,6 +12,9 @@ except ModuleNotFoundError:
     from __init__ import __doc__
 
 class ArgParser:
+    """
+    define the ArgParser for handling the console arguments
+    """
     def __init__(self) -> None:
         self.parser = ArgumentParser(description=__doc__)
         self.input_file: Path = None
@@ -19,6 +26,9 @@ class ArgParser:
 
 
     def parse(self) -> None:
+        """
+        parse the given arguments
+        """
         self.parser.add_argument('-compile', type=lambda p: Path(p).absolute(),
                                  metavar='FILE',
                                  help='compile the defined input file.')

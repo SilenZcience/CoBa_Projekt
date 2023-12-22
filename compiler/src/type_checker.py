@@ -80,7 +80,8 @@ class TypeChecker(CoBaParserListener):
         self.symbol_table.add_return(self.current_function.f_name)
         if r_type != self.current_function.f_type:
             self.err_print(ctx, 'invalid return type of function: ' + \
-                f"'{self.current_function.f_name}', expected: '{self.current_function.f_type}', got: '{r_type}'.")
+                f"'{self.current_function.f_name}', " + \
+                f"expected: '{self.current_function.f_type}', got: '{r_type}'.")
 
     def exitFunction_call(self, ctx: CoBaParser.Function_callContext) -> None:
         f_name: str = (ctx.IDENTIFIER() or ctx.K_MAIN()).getText()
@@ -155,7 +156,9 @@ class TypeChecker(CoBaParserListener):
                         f"{ctx.T_EXCLAMATION()}: '{ex_type}'.")
             else:
                 self.err_print(ctx, 'Fatal Error: unknown unary operation.')
-        elif (ctx.T_STAR() or ctx.T_SLASH() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()) is not None:
+        elif (
+            ctx.T_STAR() or ctx.T_SLASH() or ctx.T_PERCENT() or ctx.T_PLUS() or ctx.T_MINUS()
+            ) is not None:
             ex_type_a: str = self.type_stack.pop()
             ex_type_b: str = self.type_stack.pop()
             if ex_type_a == ex_type_b == ValidTypes.Integer:
@@ -177,7 +180,9 @@ class TypeChecker(CoBaParserListener):
             else:
                 self.err_print(ctx, 'unsupported operand type(s) for ' + \
                     f"{ctx.T_NOTEQUAL() or ctx.T_D_EQUAL()}: '{ex_type_b}' and '{ex_type_a}'.")
-        elif (ctx.T_LESS() or ctx.T_GREATER() or ctx.T_LESSEQUAL() or ctx.T_GREATEREQUAL()) is not None:
+        elif (
+            ctx.T_LESS() or ctx.T_GREATER() or ctx.T_LESSEQUAL() or ctx.T_GREATEREQUAL()
+            ) is not None:
             ex_type_a: str = self.type_stack.pop()
             ex_type_b: str = self.type_stack.pop()
             if ex_type_a in [ValidTypes.Integer, ValidTypes.Float64] and \
