@@ -40,6 +40,10 @@ class SymbolTableGenListener(CoBaParserListener):
 
         if not self.symbol_table.add_function(f_name, None):
             self.err_print(ctx, f"fatal error in function: '{f_name}'.")
+        # add a placeholder variable to main to ramp up the ".limit locals" number
+        # neccessary so the StringArray Parameter of main in Jasmin Bytecode can fit in
+        # (only noticable when main has no local variables otherwise)
+        self.symbol_table.add_local_variable(f_name, None, None)
 
         self.current_function = f_name
 

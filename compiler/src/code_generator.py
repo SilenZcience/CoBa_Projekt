@@ -95,7 +95,7 @@ class CodeGenerator(CoBaParserVisitor):
         self.current_function = self.symbol_table.get_function(current_function_name)
         self.code += '.method public static main([Ljava/lang/String;)V\n'
         local_var_count: int = self.set_var_ids(self.current_function.local_variables)
-        self.code += f"\t.limit locals {local_var_count+1}\n"
+        self.code += f"\t.limit locals {local_var_count}\n"
         self.code += f"\t.limit stack 100\n\n" # TODO: actual stack heuristic
 
     def visitFunction(self, ctx: CoBaParser.FunctionContext):
