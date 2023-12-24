@@ -13,6 +13,7 @@ try: # package import (python -m compiler ...)
     from compiler.src.arg_parser import ArgParser
     from compiler.src.code_generator import CodeGenerator
     from compiler.src.error_listener import ErrorListener
+    from compiler.src.liveness_analysis import LivenessAnalysis
     from compiler.src.symbol_table_gen_listener import SymbolTableGenListener
     from compiler.src.type_checker import TypeChecker
     from compiler.src.type_checker_helper import SymbolTable
@@ -22,6 +23,7 @@ except ModuleNotFoundError: # default import (python ./compiler/main.py ...)
     from src.code_generator import CodeGenerator
     from src.arg_parser import ArgParser
     from src.error_listener import ErrorListener
+    from src.liveness_analysis import LivenessAnalysis
     from src.symbol_table_gen_listener import SymbolTableGenListener
     from src.type_checker import TypeChecker
     from src.type_checker_helper import SymbolTable
@@ -52,11 +54,11 @@ def debug_print(out, desc: str = '') -> None:
     """
     print debug info. (colored)
     """
-    print('\x1b[31mDEBUG:', desc)
-    print('====================')
+    print('\x1b[32mDEBUG:', desc)
+    print('\x1b[31m====================')
     try:
         if isinstance(out, dict):
-            print('\n'.join([str(out[item]) for item in out]))
+            print('\n'.join([str(out[item]) for item in dict(sorted(out.items()))]))
         else:
             print('\n'.join([item for item in out]))
     except TypeError:
@@ -102,17 +104,31 @@ def main() -> int:
         return 3
     status_print('typechecking successful.')
 
-    if not arg_parser.compile:
-        status_print('-Error-', 'liveness is not yet implemented')
-        return 4
+    if arg_parser.compile:
+        status_print('generating...')
+        code_generator: CodeGenerator = CodeGenerator(symbol_table,
+                                                    arg_parser.output_file.stem,
+                                                    arg_parser.debug)
+        code_generator.visit(tree)
+        code_generator.generate(arg_parser.output_file)
+        status_print('generating successful.')
+    else:
+        status_print('liveness...')
+        liveness_analysis: LivenessAnalysis = LivenessAnalysis(symbol_table)
+        liveness_analysis.visit(tree)
+        liveness_analysis.gen_interference_graph()
+        if arg_parser.debug:
+            debug_print(liveness_analysis.control_flow_graphs,
+                        'Control Flow Graphs')
+        if arg_parser.debug:
+            debug_print(liveness_analysis.register_interference_graphs,
+                        'Register Interference Graphs')
+        for f_name, ri_graph in liveness_analysis.register_interference_graphs.items():
+            print('Function:', f_name)
+            print('Registers:', ri_graph.min_registers)
+            print(ri_graph)
 
-    status_print('generating...')
-    code_generator: CodeGenerator = CodeGenerator(symbol_table,
-                                                  arg_parser.output_file.stem,
-                                                  arg_parser.debug)
-    code_generator.visit(tree)
-    code_generator.generate(arg_parser.output_file)
-    status_print('generating successful.')
+    return 0
 
 
 if __name__ == '__main__':
