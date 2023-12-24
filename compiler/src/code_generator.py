@@ -39,8 +39,6 @@ class CodeGenerator(CoBaParserVisitor):
         self.variable_ids: dict[str, int] = {}
         self.code: str = ''
 
-        # self.has_errors: bool = False
-
     def generate(self, out_file: str) -> None:
         """
         write the bytecode to a file.
@@ -53,7 +51,7 @@ class CodeGenerator(CoBaParserVisitor):
         assign each local variable a distinguishable number/id
         """
         self.variable_ids.clear()
-        c_id = 0
+        c_id: int = 0
         for v_name, v_type in f_vars.items():
             self.variable_ids[v_name] = c_id
             c_id += 1 + (v_type == ValidTypes.Float64)
