@@ -70,10 +70,15 @@ class LivenessAnalysis(CoBaParserVisitor):
         self.current_graph.add_edge(self.node_anchor_id, node_id)
         self.node_anchor_id = node_id
 
-    def visitFunction_call(self, ctx: CoBaParser.Function_callContext) -> list[str]:
+    def visitFunction_call(self, ctx: CoBaParser.Function_callContext):
+        node: CFNode = CFNode()
         if ctx.function_argument() is not None:
-            return self.visit(ctx.function_argument())
-        return []
+            for v_in in self.visit(ctx.function_argument()):
+                node.add_out(v_in)
+
+        node_id: int = self.current_graph.add_node(node)
+        self.current_graph.add_edge(self.node_anchor_id, node_id)
+        self.node_anchor_id = node_id
 
     def visitFunction_argument(self, ctx: CoBaParser.Function_argumentContext) -> list[str]:
         used_vars: list[str] = self.visit(ctx.expression())
@@ -124,16 +129,15 @@ class LivenessAnalysis(CoBaParserVisitor):
         node_id_s: int = self.current_graph.add_node(node_s)
         self.current_graph.add_edge(self.node_anchor_id, node_id_s)
         self.node_anchor_id = node_id_s
-        flow_then:bool = self.visit(ctx.then_branch())
+        self.visit(ctx.then_branch())
         then_id: int = self.node_anchor_id
         self.node_anchor_id = node_id_s
-        flow_else: bool = self.visit(ctx.else_branch())
+        if ctx.else_branch() is not None:
+            self.visit(ctx.else_branch())
         node_e: CFNode = CFNode()
         node_id_e: int = self.current_graph.add_node(node_e)
-        if flow_then:
-            self.current_graph.add_edge(then_id, node_id_e)
-        if flow_else:
-            self.current_graph.add_edge(self.node_anchor_id, node_id_e)
+        self.current_graph.add_edge(then_id, node_id_e)
+        self.current_graph.add_edge(self.node_anchor_id, node_id_e)
         self.node_anchor_id = node_id_e
 
     def visitThen_branch(self, ctx: CoBaParser.Then_branchContext) -> bool:
@@ -172,7 +176,7 @@ class LivenessAnalysis(CoBaParserVisitor):
         if ctx.RIGHT is not None:
             used_vars += self.visit(ctx.RIGHT)
         if ctx.function_call() is not None:
-            used_vars += self.visit(ctx.function_call())
+            self.visit(ctx.function_call())
         if ctx.atom() is not None:
             used_vars += self.visit(ctx.atom())
 
