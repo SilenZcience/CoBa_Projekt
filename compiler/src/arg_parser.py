@@ -30,15 +30,16 @@ class ArgParser:
         parse the given arguments
         """
         self.parser.add_argument('-compile', type=lambda p: Path(p).absolute(),
-                                 metavar='FILE',
-                                 help='compile the defined input file.')
+                                 metavar='IN_FILE',
+                                 help='compile the given Julia IN_FILE into Jasmin-Bytecode.')
         self.parser.add_argument('-liveness', type=lambda p: Path(p).absolute(),
-                                 metavar='FILE',
-                                 help='Not yet implemented!')
+                                 metavar='IN_FILE',
+                                 help='generate a register interference graph for the given IN_FILE.')
         self.parser.add_argument('-output', type=lambda p: Path(p).absolute(),
-                                 metavar='FILE',
-                                 help='specify the output file.')
-        self.parser.add_argument('-debug', action='store_true')
+                                 metavar='OUT_FILE',
+                                 help='specify the output OUT_FILE used for compilation.')
+        self.parser.add_argument('-debug', action='store_true',
+                                 help='show additional debug information.')
         params = self.parser.parse_args()
 
         compile_file: Path = getattr(params, 'compile')
@@ -64,4 +65,10 @@ class ArgParser:
             if os.path.isdir(self.output_file):
                 raise ValueError('Specified output file is not a file.')
             if os.path.exists(self.output_file):
+                from time import sleep
                 print('Warning: Specified output file will be overwritten:', self.output_file)
+                print('continuing in: ')
+                for i in range(3, -1, -1):
+                    print(f"{i}...", end='', flush=True)
+                    sleep(1)
+                print()
