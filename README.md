@@ -88,7 +88,7 @@ Expected Directory Structure:
 - Download & Install Java JDK (>= v.11):
     - [Adoptium](https://adoptium.net/de/)
     - [Eclipse Temurin Releases](https://adoptium.net/de/temurin/releases/)
-- Download & Install Python (>= v.3.10):
+- Download & Install Python (>= v.3.9):
     - [Python](https://www.python.org/downloads/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
