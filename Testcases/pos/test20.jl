@@ -15,6 +15,7 @@ function example_function()
     b::Integer = 0
     result::Float64 = -1
     b_squared::Float64 = 0
+    test::Bool = false
     # Variable assignments
     x = 10
     y = 3.14
@@ -45,7 +46,11 @@ function example_function()
     
     # While loop based on integer variable
     while b > 0
-        println("While loop iteration: ")
+        if test
+            println("lol")
+        else
+            println("While loop iteration: ")
+        end
         println(b)
         b = b- 1
     end
