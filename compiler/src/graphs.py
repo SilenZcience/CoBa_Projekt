@@ -37,6 +37,7 @@ class RIGraph:
         self.nodes: list[str] = [node for node in local_variables if isinstance(node, str)]
         self.adj: dict[str, set[str]] = {node: set() for node in self.nodes}
         self.colors: dict[str, int] = {node: -1 for node in self.nodes}
+        self.min_registers = 0
         for i_set in interference_sets:
             if len(i_set) == 1:
                 continue
@@ -44,15 +45,14 @@ class RIGraph:
                 for node_b in i_set:
                     if node_a != node_b:
                         self.adj[node_a].add(node_b)
-        self.min_registers = 0
         self.brute_force_chromatic_number()
 
-    def greedy_coloring(self):
+    def greedy_coloring(self) -> tuple[int, dict[str, int]]:
         colors = {}
+        valid_colors = set(range(len(self.nodes)))
         for node in self.nodes:
             neighbor_colors = {colors[neighbor] for neighbor in self.adj[node] if neighbor in colors}
-            available_colors = set(range(len(self.nodes))) - neighbor_colors
-            colors[node] = min(available_colors)
+            colors[node] = min(valid_colors - neighbor_colors)
 
         chromatic_number = len(set(colors.values()))
         return chromatic_number, colors
@@ -64,22 +64,22 @@ class RIGraph:
                     return False
         return True
 
-    def brute_force_chromatic_number(self):
+    def brute_force_chromatic_number(self) -> None:
         smallest_chromatic_number, best_coloring = self.greedy_coloring()
-        num_colors = len(self.nodes)
-        for color_assignment in product(range(num_colors), repeat=num_colors):
-            chromatic_number = len(set(color_assignment))
-            if chromatic_number >= smallest_chromatic_number:
-                continue
-            coloring = dict(zip(self.nodes, color_assignment))
+        if len(self.nodes) < 7:
+            num_colors = len(self.nodes)
+            for color_assignment in product(range(num_colors), repeat=num_colors):
+                chromatic_number = len(set(color_assignment))
+                if chromatic_number >= smallest_chromatic_number:
+                    continue
+                coloring = dict(zip(self.nodes, color_assignment))
 
-            if self.is_valid_coloring(coloring):
-                smallest_chromatic_number = chromatic_number
-                best_coloring = coloring.copy()
+                if self.is_valid_coloring(coloring):
+                    smallest_chromatic_number = chromatic_number
+                    best_coloring = coloring.copy()
 
         self.colors = best_coloring
         self.min_registers = smallest_chromatic_number
-        return smallest_chromatic_number, best_coloring
 
     # def bron_kerbosch(self, R: set[str], P: set[str], X: set[str], colors: dict[str, int]) -> int:
     #     """
