@@ -3,7 +3,7 @@ define a Graph for Liveness Analysis
 """
 
 from copy import deepcopy
-from itertools import permutations, product
+from itertools import product
 
 class CFNode:
     """
@@ -47,6 +47,16 @@ class RIGraph:
         self.min_registers = 0
         self.brute_force_chromatic_number()
 
+    def greedy_coloring(self):
+        colors = {}
+        for node in self.nodes:
+            neighbor_colors = {colors[neighbor] for neighbor in self.adj[node] if neighbor in colors}
+            available_colors = set(range(len(self.nodes))) - neighbor_colors
+            colors[node] = min(available_colors)
+
+        chromatic_number = len(set(colors.values()))
+        return chromatic_number, colors
+
     def is_valid_coloring(self, coloring):
         for node, neighbors in self.adj.items():
             for neighbor in neighbors:
@@ -55,9 +65,7 @@ class RIGraph:
         return True
 
     def brute_force_chromatic_number(self):
-        smallest_chromatic_number = float('inf')
-        best_coloring = {}
-
+        smallest_chromatic_number, best_coloring = self.greedy_coloring()
         num_colors = len(self.nodes)
         for color_assignment in product(range(num_colors), repeat=num_colors):
             chromatic_number = len(set(color_assignment))
@@ -69,11 +77,8 @@ class RIGraph:
                 smallest_chromatic_number = chromatic_number
                 best_coloring = coloring.copy()
 
-
         self.colors = best_coloring
         self.min_registers = smallest_chromatic_number
-        # print("Smallest Chromatic Number:", smallest_chromatic_number)
-        # print("Best Coloring:", best_coloring)
         return smallest_chromatic_number, best_coloring
 
     # def bron_kerbosch(self, R: set[str], P: set[str], X: set[str], colors: dict[str, int]) -> int:
@@ -116,10 +121,10 @@ class RIGraph:
         s_str += f"Nodes (#{len(self.nodes)}) [Name(Color)]:\n"
         s_str += ','.join([f"{node}({self.colors[node]})" for node in self.nodes])
         s_str += '\nAdjacency List:\n'
-        indent: int = max([len(name) for name in self.nodes])
+        indent: int = max((len(name) for name in self.nodes), default=0)
         for n_id, n_adj in self.adj.items():
             s_str += f"{n_id:>{indent}}: {n_adj}\n"
-        s_str += '+++++++++++++++++++++++++\n'
+        s_str += '+++++++++++++++++++++++++'
         return s_str
 
 
