@@ -23,6 +23,9 @@
          </ul>
       </li>
       <li><a href="#usage">Usage</a></li>
+         <ul>
+            <li><a href="#arguments">Arguments</a></li>
+         </ul>
       <li><a href="#contact">Contact</a></li>
    </ol>
 </details>
@@ -110,15 +113,28 @@ Expected Directory Structure:
 
 ## Usage
 
-- Use the Project as a Python Module/Package:
-    - run (from the 'CoBa_Projekt' directory):
+```console
+stups_compiler.py [-h] [-compile IN_FILE] [-liveness IN_FILE] [-output OUT_FILE] [-debug]
+```
 
-    ```python -m compiler -compile <file.jl>```
+- Use the Project as a Python Module/Package (run from the 'CoBa_Projekt' directory):
+    - ```python -m compiler```
 
-- Otherwise:
-    - run
+- Otherwise
+    - ```python stups_compiler.py```
 
-    ```python stups_compiler.py -compile <file.jl>```
+### Arguments
+
+- -compile FILE
+    - compile the given Julia IN_FILE into Jasmin-Bytecode.
+- -liveness FILE
+    - generate a register interference graph for the given IN_FILE.
+- -output FILE
+    - specify the output OUT_FILE used for compilation..
+    - default is the input-file with a .j extension.
+- -debug
+    - show additional debug information.
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
