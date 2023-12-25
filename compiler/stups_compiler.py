@@ -110,6 +110,7 @@ def main() -> int:
                                                     arg_parser.output_file.stem,
                                                     arg_parser.debug)
         code_generator.visit(tree)
+        status_print('writing file', arg_parser.output_file)
         code_generator.generate(arg_parser.output_file)
         status_print('generating successful.')
     else:
@@ -117,6 +118,7 @@ def main() -> int:
         liveness_analysis: LivenessAnalysis = LivenessAnalysis(symbol_table)
         liveness_analysis.visit(tree)
         liveness_analysis.gen_interference_graph()
+        status_print('liveness result:')
         if arg_parser.debug:
             debug_print(liveness_analysis.control_flow_graphs,
                         'Control Flow Graphs')
@@ -124,7 +126,7 @@ def main() -> int:
             debug_print(liveness_analysis.register_interference_graphs,
                         'Register Interference Graphs')
         for f_name, ri_graph in liveness_analysis.register_interference_graphs.items():
-            print('Function:', f_name)
+            print('\nFunction:', f_name)
             print('Registers:', ri_graph.min_registers)
             print(ri_graph)
 
