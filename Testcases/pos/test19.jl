@@ -13,7 +13,6 @@ function main()
         e = d+f
         if true
             f = 2*e
-            println(a)
         else
             b = d+e
             e = e-1
