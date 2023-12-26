@@ -47,84 +47,72 @@ class RIGraph:
                         self.adj[node_a].add(node_b)
         self.brute_force_chromatic_number()
 
+    def bron_kerbosch(self, R: set[str], P: set[str], X: set[str], cliques: list[set[str]]) -> int:
+        """
+        bron kerbosch maximal cliques algorithm.
+        """
+        if not P and not X:
+            cliques.append(R)
+            return
+
+        pivot = next(iter(P.union(X)))
+
+        for node in P.difference(self.adj[pivot]):
+            R_prime = R.union({node})
+            P_prime = P.intersection(self.adj[node])
+            X_prime = X.intersection(self.adj[node])
+            self.bron_kerbosch(R_prime, P_prime, X_prime, cliques)
+
     def greedy_coloring(self) -> tuple[int, dict[str, int]]:
         colors = {}
         valid_colors = set(range(len(self.nodes)))
         for node in self.nodes:
-            neighbor_colors = {colors[neighbor] for neighbor in self.adj[node] if neighbor in colors}
+            neighbor_colors = {colors[nbor] for nbor in self.adj[node] if nbor in colors}
             colors[node] = min(valid_colors - neighbor_colors)
 
-        chromatic_number = len(set(colors.values()))
-        return chromatic_number, colors
-
-    def is_valid_coloring(self, coloring):
-        for node, neighbors in self.adj.items():
-            for neighbor in neighbors:
-                if coloring[node] == coloring[neighbor]:
-                    return False
-        return True
+        return len(set(colors.values())), colors
 
     def brute_force_chromatic_number(self) -> None:
-        smallest_chromatic_number, best_coloring = self.greedy_coloring()
-        if len(self.nodes) < 7:
-            num_colors = len(self.nodes)
-            for color_assignment in product(range(num_colors), repeat=num_colors):
-                chromatic_number = len(set(color_assignment))
-                if chromatic_number >= smallest_chromatic_number:
-                    continue
-                coloring = dict(zip(self.nodes, color_assignment))
+        """
+        brute force the chromatic number.
+        greedy algorithm is used as an upper boundary.
+        clique number (bron kerbosch) is used as a lower boundary.
+        """
+        def is_valid_coloring(coloring: dict[str, tuple[int, ...]]) -> bool:
+            for node, neighbors in self.adj.items():
+                for neighbor in neighbors:
+                    if coloring[node] == coloring[neighbor]:
+                        return False
+            return True
+        cliques = []
+        upper_boundary, best_coloring = self.greedy_coloring()
+        self.bron_kerbosch(set(), set(self.nodes), set(), cliques)
+        lower_boundary = max(len(clique) for clique in cliques)
 
-                if self.is_valid_coloring(coloring):
-                    smallest_chromatic_number = chromatic_number
+        chromatic_number = upper_boundary
+        for chrom_num in range(lower_boundary, upper_boundary):
+            for color_assignment in product(range(chrom_num), repeat=len(self.nodes)):
+                coloring = dict(zip(self.nodes, color_assignment))
+                if is_valid_coloring(coloring):
                     best_coloring = coloring.copy()
+                    chromatic_number = chrom_num
+                    break
+            else:
+                continue
+            break
 
         self.colors = best_coloring
-        self.min_registers = smallest_chromatic_number
-
-    # def bron_kerbosch(self, R: set[str], P: set[str], X: set[str], colors: dict[str, int]) -> int:
-    #     """
-    #     modified bron kerbosch maximal cliques algorithm to find chromatic number.
-    #     """
-    #     if not P and not X:
-    #         return len(set(colors.values()))
-
-    #     pivot = next(iter(P.union(X)))
-    #     max_color = float('inf')
-
-    #     for node in P.difference(self.adj[pivot]):
-    #         P_prime = P.intersection(self.adj[node])
-    #         X_prime = X.intersection(self.adj[node])
-    #         R_prime = R.union({node})
-
-    #         colors[node] = len(set(R_prime))
-    #         color_count = self.bron_kerbosch(R_prime, P_prime, X_prime, colors)
-    #         if color_count < max_color:
-    #             max_color = color_count
-
-    #         colors[node] = -1  # Backtrack
-
-    #     return max_color
-
-    # def chromatic_number(self):
-    #     """
-    #     init and run bron kerbosch algorithm.
-    #     """
-    #     R = set()
-    #     P = set(self.nodes)
-    #     X = set()
-    #     colors: dict[str, int] = {node: -1 for node in self.nodes}
-    #     chromatic_number: int = self.bron_kerbosch(R, P, X, colors)
-    #     return chromatic_number
+        self.min_registers = chromatic_number
 
     def __str__(self) -> str:
-        s_str: str = '+++++++++++++++++++++++++\n'
+        s_str: str = '-------------------------\n'
         s_str += f"Nodes (#{len(self.nodes)}) [Name(Color)]:\n"
         s_str += ','.join([f"{node}({self.colors[node]})" for node in self.nodes])
         s_str += '\nAdjacency List:\n'
         indent: int = max((len(name) for name in self.nodes), default=0)
         for n_id, n_adj in self.adj.items():
             s_str += f"{n_id:>{indent}}: {n_adj}\n"
-        s_str += '+++++++++++++++++++++++++'
+        s_str += '-------------------------'
         return s_str
 
 
@@ -135,7 +123,6 @@ class CFGraph:
     def __init__(self) -> None:
         self.nodes: list[CFNode] = []
         self.adj: dict[int, set[int]] = {}
-        self.ref_counter: dict[int, int] = {}
         self.interferences: dict[int, set[str]] = {}
 
     def add_node(self, node: CFNode) -> int:
@@ -153,9 +140,6 @@ class CFGraph:
         add an edge between two nodes via node ids.
         """
         self.adj[id_from].add(id_to)
-        if self.ref_counter.get(id_to) is None:
-            self.ref_counter[id_to] = 0
-        self.ref_counter[id_to] += 1
 
     def dfs(self, node_id: int, visited: set[int])-> set[str]:
         """
@@ -206,12 +190,12 @@ class CFGraph:
         return [s for s in self.interferences.values() if s]
 
     def __str__(self) -> str:
-        s_str: str = '++++++++++++++++++++\n'
+        s_str: str = '-------------------------\n'
         s_str += f"Nodes (#{len(self.nodes)}):\n"
         for i, node in enumerate(self.nodes):
-            s_str += f"{str(node):<32}ref: {self.ref_counter.get(i, 0)}\n"
+            s_str += f"{str(node):<32} interference: {self.interferences[i]}\n"
         s_str += '\nAdjacency List:\n'
         for n_id, n_adj in self.adj.items():
             s_str += f"{n_id:>3}: {n_adj}\n"
-        s_str += '++++++++++++++++++++\n'
+        s_str += '-------------------------\n'
         return s_str
