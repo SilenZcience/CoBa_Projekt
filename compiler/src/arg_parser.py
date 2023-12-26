@@ -67,8 +67,9 @@ class ArgParser:
             if os.path.exists(self.output_file):
                 from time import sleep
                 print('Warning: Specified output file will be overwritten:', self.output_file)
-                print('continuing in: ')
-                for i in range(3, -1, -1):
-                    print(f"{i}...", end='', flush=True)
-                    sleep(1)
-                print()
+                if self.output_file.suffix != '.j' or self.output_file == self.input_file:
+                    print('continuing in: ')
+                    for i in range(3, -1, -1):
+                        print(f"{i}...", end='', flush=True)
+                        sleep(1)
+                    print()
