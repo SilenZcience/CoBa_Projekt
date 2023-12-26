@@ -35,8 +35,8 @@ def exception_handler(exception_type: type, exception, traceback,
     custom exception handler (ignore traceback).
     """
     try:
-        # print(exception, file=sys.stderr)
-        debug_hook(exception_type, exception, traceback)
+        print(exception, file=sys.stderr)
+        # debug_hook(exception_type, exception, traceback)
     except Exception:
         debug_hook(exception_type, exception, traceback)
 
@@ -58,7 +58,7 @@ def debug_print(out, desc: str = '') -> None:
     print('\x1b[31m====================')
     try:
         if isinstance(out, dict):
-            print('\n'.join([str(out[item]) for item in dict(sorted(out.items()))]))
+            print('\n'.join([f"{item}:\n{out[item]}" for item in dict(sorted(out.items()))]))
         else:
             print('\n'.join([item for item in out]))
     except TypeError:
@@ -122,9 +122,6 @@ def main() -> int:
         if arg_parser.debug:
             debug_print(liveness_analysis.control_flow_graphs,
                         'Control Flow Graphs')
-        if arg_parser.debug:
-            debug_print(liveness_analysis.register_interference_graphs,
-                        'Register Interference Graphs')
         for f_name, ri_graph in liveness_analysis.register_interference_graphs.items():
             print('\nFunction:', f_name)
             print('Registers:', ri_graph.min_registers)
