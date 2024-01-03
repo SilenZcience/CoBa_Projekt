@@ -70,7 +70,7 @@ class TypeChecker(CoBaParserListener):
 
     def exitFunction_body(self, ctx: CoBaParser.Function_bodyContext) -> None:
         # check that the function has a return statement if its return type is not Void
-        if self.current_function.f_type is not None and not self.current_function.has_return:
+        if self.current_function.f_type is not None and ctx.return_statement() is None:
             self.err_print(ctx, 'invalid control flow in function: ' + \
                 f"'{self.current_function.f_name}', missing return statement.")
 
@@ -78,7 +78,6 @@ class TypeChecker(CoBaParserListener):
         if ctx.expression() is None:
             self.type_stack.push(None)
         r_type: str = self.type_stack.pop()
-        self.current_function.add_return()
         # check if return type is compatible with expected function return type
         if r_type != self.current_function.f_type:
             self.err_print(ctx, 'invalid return type of function: ' + \
