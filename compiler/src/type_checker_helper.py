@@ -22,7 +22,6 @@ class FunctionSymbol:
         # dictionaries are since Python >= 3.6 in order (important)
         self.parameters: dict[str, str] = {}
         self.local_variables: dict[str, str] = {}
-        self.has_return: bool = False
 
     def add_parameter(self, p_name: str, p_type: str) -> bool:
         """
@@ -41,12 +40,6 @@ class FunctionSymbol:
             return False
         self.local_variables[v_name] = v_type
         return True
-
-    def add_return(self) -> None:
-        """
-        check if cuntion has a return statement
-        """
-        self.has_return = True
 
     def __str__(self) -> str:
         s_str: str = f"----- function -----\n\t{self.f_name} -> {self.f_type}\n"
