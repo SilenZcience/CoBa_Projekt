@@ -69,6 +69,7 @@ class TypeChecker(CoBaParserListener):
         self.current_function = self.symbol_table.get_function(f_name)
 
     def exitFunction_body(self, ctx: CoBaParser.Function_bodyContext) -> None:
+        # check that the function has a return statement if its return type is not Void
         if self.current_function.f_type is not None and not self.current_function.has_return:
             self.err_print(ctx, 'invalid control flow in function: ' + \
                 f"'{self.current_function.f_name}', missing return statement.")
@@ -78,6 +79,7 @@ class TypeChecker(CoBaParserListener):
             self.type_stack.push(None)
         r_type: str = self.type_stack.pop()
         self.symbol_table.add_return(self.current_function.f_name)
+        # check if return type is compatible with expected function return type
         if r_type != self.current_function.f_type:
             self.err_print(ctx, 'invalid return type of function: ' + \
                 f"'{self.current_function.f_name}', " + \
@@ -96,6 +98,7 @@ class TypeChecker(CoBaParserListener):
             argument_type_list.insert(0, self.type_stack.pop())
             current_argument = current_argument.function_argument()
 
+        # check that the given amount of arguments fits inside the parameter list of the function
         if len(argument_type_list) > len(f_table.parameters):
             return self.err_print(ctx, f"too many arguments provided at function call: '{f_name}'.")
         if len(argument_type_list) < len(f_table.parameters):
@@ -103,6 +106,7 @@ class TypeChecker(CoBaParserListener):
 
         current_argument_count: int = 0
         current_argument = ctx.function_argument()
+        # check for each argument if the type is compatible with the expected parameter type
         while current_argument is not None:
             a_type: str = argument_type_list[current_argument_count]
             p_type: str = [*f_table.parameters.values()][current_argument_count]
@@ -118,6 +122,7 @@ class TypeChecker(CoBaParserListener):
         v_name: str = ctx.IDENTIFIER().getText()
         v_type: str = ctx.type_assignement().type_spec().getText()
         assigned_type: str = self.type_stack.pop()
+        # Integers are allowed to be stored inside a Float
         if v_type != assigned_type and \
             (v_type != ValidTypes.Float64 or assigned_type != ValidTypes.Integer):
             self.err_print(ctx, f"wrong value type for variable: '{v_name}', " + \
@@ -129,6 +134,7 @@ class TypeChecker(CoBaParserListener):
         assigned_type: str = self.type_stack.pop()
         if v_type is None:
             self.err_print(ctx, f"used variable without declaration: '{v_name}'.")
+        # Integers are allowed to be stored inside a Float
         elif v_type != assigned_type and \
             (v_type != ValidTypes.Float64 or assigned_type != ValidTypes.Integer):
             self.err_print(ctx, f"wrong value type for variable: '{v_name}', " + \
@@ -136,18 +142,21 @@ class TypeChecker(CoBaParserListener):
 
     def exitBool_expression(self, ctx: CoBaParser.Bool_expressionContext) -> None:
         ex_type: str = self.type_stack.pop()
+        # Bool expressions are needed for loops or if-statements. they must have type Bool
         if ex_type != ValidTypes.Boolean:
             self.err_print(ctx, "expression must evaluate to bool type.")
 
     def exitExpression(self, ctx: CoBaParser.ExpressionContext) -> None:
         if ctx.UNARY is not None:
             ex_type: str = self.type_stack.pop()
+            # unary + and - only work for numeric types
             if (ctx.T_PLUS() or ctx.T_MINUS()) is not None:
                 if ex_type in [ValidTypes.Integer, ValidTypes.Float64]:
                     self.type_stack.push(ex_type)
                 else:
                     self.err_print(ctx, 'unsupported operand type(s) for ' + \
                         f"{ctx.T_PLUS() or ctx.T_MINUS()}: '{ex_type}'.")
+            # ! op only works for Booleans
             elif ctx.T_EXCLAMATION() is not None:
                 if ex_type == ValidTypes.Boolean:
                     self.type_stack.push(ex_type)
@@ -161,8 +170,10 @@ class TypeChecker(CoBaParserListener):
             ) is not None:
             ex_type_a: str = self.type_stack.pop()
             ex_type_b: str = self.type_stack.pop()
+            # two Integers result in an Integer
             if ex_type_a == ex_type_b == ValidTypes.Integer:
                 self.type_stack.push(ValidTypes.Integer)
+            # if one operand is a Float the result will always be a Float aswell
             elif ex_type_a in [ValidTypes.Integer, ValidTypes.Float64] and \
                 ex_type_b in [ValidTypes.Integer, ValidTypes.Float64]:
                 self.type_stack.push(ValidTypes.Float64)
@@ -173,6 +184,8 @@ class TypeChecker(CoBaParserListener):
         elif (ctx.T_NOTEQUAL() or ctx.T_D_EQUAL()) is not None:
             ex_type_a: str = self.type_stack.pop()
             ex_type_b: str = self.type_stack.pop()
+            # equality checks work for all data types as long as they are compatible
+            # compatible are all data types with themselves or numeric values
             if ex_type_a in [ValidTypes.Integer, ValidTypes.Float64] and \
                ex_type_b in [ValidTypes.Integer, ValidTypes.Float64] or \
                ex_type_a == ex_type_b:
@@ -185,6 +198,7 @@ class TypeChecker(CoBaParserListener):
             ) is not None:
             ex_type_a: str = self.type_stack.pop()
             ex_type_b: str = self.type_stack.pop()
+            # quantity comparison only works for numeric values
             if ex_type_a in [ValidTypes.Integer, ValidTypes.Float64] and \
                ex_type_b in [ValidTypes.Integer, ValidTypes.Float64]:
                 self.type_stack.push(ValidTypes.Boolean)
@@ -195,6 +209,7 @@ class TypeChecker(CoBaParserListener):
         elif (ctx.T_D_AND() or ctx.T_D_VBAR()) is not None:
             ex_type_a = self.type_stack.pop()
             ex_type_b = self.type_stack.pop()
+            # && and || are boolsche operations
             if ex_type_a == ex_type_b == ValidTypes.Boolean:
                 self.type_stack.push(ValidTypes.Boolean)
             else:
@@ -206,15 +221,17 @@ class TypeChecker(CoBaParserListener):
             self.err_print(ctx, 'Fatal Error: unknown expresion.')
 
     def exitAtom(self, ctx: CoBaParser.AtomContext) -> None:
+        # when encountering a variable, push its type
         if ctx.IDENTIFIER() is not None:
             v_type: str = self.symbol_table.get_local_variable(
                 self.current_function.f_name, ctx.IDENTIFIER().getText())
             if v_type is not None:
                 self.type_stack.push(v_type)
-            else:
+            else: # this case should already be covered in the symbol table generator
                 self.err_print(ctx, f"used variable without declaration: '{ctx.IDENTIFIER()}'.")
 
     def exitType_element(self, ctx: CoBaParser.Type_elementContext) -> None:
+        # simply push the type of a constant atom
         if ctx.INTEGER_NUMBER() is not None:
             self.type_stack.push(ValidTypes.Integer)
         elif ctx.FLOAT_NUMBER() is not None:
