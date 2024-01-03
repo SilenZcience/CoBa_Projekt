@@ -78,7 +78,7 @@ class TypeChecker(CoBaParserListener):
         if ctx.expression() is None:
             self.type_stack.push(None)
         r_type: str = self.type_stack.pop()
-        self.symbol_table.add_return(self.current_function.f_name)
+        self.current_function.add_return()
         # check if return type is compatible with expected function return type
         if r_type != self.current_function.f_type:
             self.err_print(ctx, 'invalid return type of function: ' + \

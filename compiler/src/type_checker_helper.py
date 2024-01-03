@@ -42,14 +42,11 @@ class FunctionSymbol:
         self.local_variables[v_name] = v_type
         return True
 
-    def add_return(self) -> bool:
+    def add_return(self) -> None:
         """
         check if cuntion has a return statement
         """
-        if self.has_return:
-            return False
         self.has_return = True
-        return True
 
     def __str__(self) -> str:
         s_str: str = f"----- function -----\n\t{self.f_name} -> {self.f_type}\n"
@@ -113,12 +110,3 @@ class SymbolTable:
         if f_symbol is None:
             return False
         return f_symbol.add_local_variable(v_name, v_type)
-
-    def add_return(self, f_name: str) -> bool:
-        """
-        add a return indicator by function name
-        """
-        f_symbol: FunctionSymbol = self.get_function(f_name)
-        if f_symbol is None:
-            return False
-        return f_symbol.add_return()
