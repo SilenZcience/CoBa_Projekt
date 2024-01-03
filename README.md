@@ -71,6 +71,10 @@ Expected Directory Structure:
     - [ANTLR Download Page](https://www.antlr.org/download.html)
     - [Direct Download](https://github.com/antlr/website-antlr4/raw/gh-pages/download/antlr-4.13.1-complete.jar) (from the official Github Repo)
 
+- Download the Jasmin Java Assembler (>=2.4):
+    - [Jasmin Home Page](https://jasmin.sourceforge.net/)
+    - [Jasmin SourceForge Download Page](https://sourceforge.net/projects/jasmin/files/)
+
 ```
 Expected Directory Structure:
 - CoBa_Projekt
@@ -83,9 +87,10 @@ Expected Directory Structure:
         |_ stups_compiler.py
         |_ ...
     |_ antlr-4.13.1-complete.jar
+    |_ jasmin.jar
 ```
 
-- Download & Install Java JDK (>= v.11):
+- Download & Install the Java JDK (>= v.11):
     - [Adoptium](https://adoptium.net/de/)
     - [Eclipse Temurin Releases](https://adoptium.net/de/temurin/releases/)
 - Download & Install Python (>= v.3.9):
@@ -120,21 +125,35 @@ stups_compiler.py [-h] [-compile IN_FILE] [-liveness IN_FILE] [-output OUT_FILE]
 - Use the Project as a Python Module/Package (run from the 'CoBa_Projekt' directory):
     - ```python -m compiler```
 
-- Otherwise
+- Otherwise use:
     - ```python stups_compiler.py```
 
 ### Arguments
 
-- -compile FILE
+- -compile IN_FILE
     - compile the given Julia IN_FILE into Jasmin-Bytecode.
-- -liveness FILE
+- -liveness IN_FILE
     - generate a register interference graph for the given IN_FILE.
-- -output FILE
-    - specify the output OUT_FILE used for compilation..
+- -output OUT_FILE
+    - specify the output OUT_FILE used for compilation.
     - default is the input-file with a .j extension.
 - -debug
     - show additional debug information.
 
+### Execution
+
+- compile the generated Jasmin Bytecode using the Jasmin Assembler
+    - run:
+
+    ```console
+    java -jar ./jasmin.jar <file.j>
+    ```
+- run the compiled .class file
+    - run:
+
+    ```console
+    java -cp . <file.class>
+    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
