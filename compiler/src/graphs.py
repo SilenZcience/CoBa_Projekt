@@ -12,7 +12,9 @@ class CFNode:
     def __init__(self, name: str = '') -> None:
         self.name = name
         self.id_: int = -1
+        # the variables that get stored in
         self.ins: set[str] = set()
+        # the variables that get loaded
         self.outs: set[str] = set()
 
     def set_id(self, id_: int) -> None:
@@ -34,10 +36,12 @@ class RIGraph:
     implement logic for a register interference graph.
     """
     def __init__(self, local_variables: list[str], interference_sets: list[set[str]]) -> None:
+        # additional check to exclude the None type Node in the main function
         self.nodes: list[str] = [node for node in local_variables if isinstance(node, str)]
         self.adj: dict[str, set[str]] = {node: set() for node in self.nodes}
         self.colors: dict[str, int] = {node: -1 for node in self.nodes}
         self.min_registers = 0
+        # connect every node with every other node in all given sets
         for i_set in interference_sets:
             if len(i_set) == 1:
                 continue
@@ -47,9 +51,10 @@ class RIGraph:
                         self.adj[node_a].add(node_b)
         self.brute_force_chromatic_number()
 
-    def bron_kerbosch(self, R: set[str], P: set[str], X: set[str], cliques: list[set[str]]) -> int:
+    def bron_kerbosch(self, R: set[str], P: set[str], X: set[str], cliques: list[set[str]]) -> None:
         """
         bron kerbosch maximal cliques algorithm.
+        https://en.wikipedia.org/wiki/Bron%E2%80%93Kerbosch_algorithm#With_pivoting
         """
         if not P and not X:
             cliques.append(R)
@@ -58,12 +63,16 @@ class RIGraph:
         pivot = next(iter(P.union(X)))
 
         for node in P.difference(self.adj[pivot]):
-            R_prime = R.union({node})
-            P_prime = P.intersection(self.adj[node])
-            X_prime = X.intersection(self.adj[node])
-            self.bron_kerbosch(R_prime, P_prime, X_prime, cliques)
+            r_prime = R.union({node})
+            p_prime = P.intersection(self.adj[node])
+            x_prime = X.intersection(self.adj[node])
+            self.bron_kerbosch(r_prime, p_prime, x_prime, cliques)
 
     def greedy_coloring(self) -> tuple[int, dict[str, int]]:
+        """
+        basic greedy algorithm for graph coloring
+        https://en.wikipedia.org/wiki/Greedy_coloring#Algorithm
+        """
         colors = {}
         valid_colors = set(range(len(self.nodes)))
         for node in self.nodes:
@@ -84,6 +93,7 @@ class RIGraph:
                     if coloring[node] == coloring[neighbor]:
                         return False
             return True
+
         cliques = []
         upper_boundary, best_coloring = self.greedy_coloring()
         self.bron_kerbosch(set(), set(self.nodes), set(), cliques)
@@ -91,6 +101,10 @@ class RIGraph:
 
         chromatic_number = upper_boundary
         for chrom_num in range(lower_boundary, upper_boundary):
+            # we only bruteforce on smaller graphs
+            # larger graphs only get approximated using the greedy algorithm
+            if chrom_num > 7:
+                break
             for color_assignment in product(range(chrom_num), repeat=len(self.nodes)):
                 coloring = dict(zip(self.nodes, color_assignment))
                 if is_valid_coloring(coloring):
@@ -101,6 +115,7 @@ class RIGraph:
                 continue
             break
 
+        # save the best configuration
         self.colors = best_coloring
         self.min_registers = chromatic_number
 
