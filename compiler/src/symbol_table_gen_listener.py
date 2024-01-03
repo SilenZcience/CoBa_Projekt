@@ -71,11 +71,15 @@ class SymbolTableGenListener(CoBaParserListener):
         v_name = ctx.IDENTIFIER().getText()
         v_type = ctx.type_assignement().type_spec().getText()
 
+        # add a new variable to the current function table if if does not exist yet
         if not self.symbol_table.add_local_variable(self.current_function, v_name, v_type):
-            self.err_print(ctx, f"duplicate variable name: '{v_name}'")
+            self.err_print(ctx, 'duplicate variable name: ' + \
+                f"'{v_name}' in scope '{self.current_function}'")
 
     def exitAtom(self, ctx: CoBaParser.AtomContext) -> None:
         if ctx.IDENTIFIER() is not None:
+            # only variables are important atoms here
+            # throw an error if the variable is not yet known
             v_type: str = self.symbol_table.get_local_variable(
                 self.current_function, ctx.IDENTIFIER().getText())
             if v_type is None:
