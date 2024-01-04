@@ -15,7 +15,8 @@ check_output = False
 failed_pos = []
 failed_neg = []
 
-CMD = 'python -m compiler -compile'.split(' ')
+CMD_compile = 'python -m compiler -compile'.split(' ')
+CMD_liveness = 'python -m compiler -liveness'.split(' ')
 CONST_SUCCESS = 'success'
 CONST_FAILED = 'FAILED'
 l_msg = ''
@@ -28,7 +29,13 @@ if len(sys.argv) > 1:
 if ONLY_ID > -1:
     f_file = os.path.abspath(os.path.join(
         pos_path, [file for file in pos_files if file[-3:] == '.jl'][ONLY_ID]))
-    sub = subprocess.run(CMD + [f_file, '-debug'],
+    sub = subprocess.run(CMD_liveness + [f_file, '-debug'],
+                         cwd=package_dir, capture_output=True, check=check_output)
+    print(sub.stdout.decode())
+    print(sub.stderr.decode())
+    if sub.returncode > 0:
+        sys.exit(sub.returncode)
+    sub = subprocess.run(CMD_compile + [f_file, '-debug'],
                          cwd=package_dir, capture_output=True, check=check_output)
     print(sub.stdout.decode())
     print(sub.stderr.decode())
@@ -53,7 +60,7 @@ for file in pos_files:
     f_file = os.path.abspath(os.path.join(pos_path, file))
     if f_file[-3:] != '.jl':
         continue
-    sub = subprocess.run(CMD + [f_file], cwd=package_dir, capture_output=True, check=check_output)
+    sub = subprocess.run(CMD_compile + [f_file], cwd=package_dir, capture_output=True, check=check_output)
     if l_error_code == 0:
         print('\b' * len(l_msg), end='')
         print(' ' * len(l_msg), end='')
@@ -78,7 +85,7 @@ for file in neg_files:
     f_file = os.path.abspath(os.path.join(neg_path, file))
     if f_file[-3:] != '.jl':
         continue
-    sub = subprocess.run(CMD + [f_file], cwd=package_dir, capture_output=True, check=check_output)
+    sub = subprocess.run(CMD_compile + [f_file], cwd=package_dir, capture_output=True, check=check_output)
     if l_error_code != 0:
         print('\b' * len(l_msg), end='')
         print(' ' * len(l_msg), end='')
