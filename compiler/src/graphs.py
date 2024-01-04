@@ -121,12 +121,14 @@ class RIGraph:
 
     def __str__(self) -> str:
         s_str: str = '-------------------------\n'
-        s_str += f"Nodes (#{len(self.nodes)}) [Name(Color)]:\n"
-        s_str += ','.join([f"{node}({self.colors[node]})" for node in self.nodes])
-        s_str += '\nAdjacency List:\n'
-        indent: int = max((len(name) for name in self.nodes), default=0)
-        for n_id, n_adj in self.adj.items():
-            s_str += f"{n_id:>{indent}}: {n_adj}\n"
+        if self.nodes:
+            s_str += f"Nodes (#{len(self.nodes)}) [Name(Register)]:\n"
+            s_str += ','.join([f"{node}({self.colors[node]})" for node in self.nodes])
+        if self.adj:
+            s_str += '\nAdjacency List:\n'
+            indent: int = max((len(name) for name in self.nodes), default=0)
+            for n_id, n_adj in self.adj.items():
+                s_str += f"{n_id:>{indent}}: {n_adj if n_adj else '{}'}\n"
         s_str += '-------------------------'
         return s_str
 
