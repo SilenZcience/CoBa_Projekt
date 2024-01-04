@@ -130,7 +130,7 @@ class CodeGenerator(CoBaParserVisitor):
         self.visitChildren(ctx)
         # set the actually needed stack size
         self.code = self.code.replace('.limit stack -',
-                                      f".limit stack {self.stack_size.max_stack_size}")
+                                      f".limit stack {self.stack_size.get_stack_size()}")
         self.code += '.end method\n\n'
 
     def visitMain_function_header(self, ctx: CoBaParser.Main_function_headerContext):
@@ -149,7 +149,7 @@ class CodeGenerator(CoBaParserVisitor):
         self.visitChildren(ctx)
         # set the actually needed stack size
         self.code = self.code.replace('.limit stack -',
-                                      f".limit stack {self.stack_size.max_stack_size}")
+                                      f".limit stack {self.stack_size.get_stack_size()}")
         self.code += '.end method\n\n'
 
     def visitFunction_header(self, ctx: CoBaParser.Function_headerContext):
@@ -187,18 +187,7 @@ class CodeGenerator(CoBaParserVisitor):
         # technically only void functions are allowed to not have one ...
         # but these cases should be cought by the type checker
         if ctx.return_statement() is None:
-            f_type = self.current_function.f_type
-            if f_type in [ValidTypes.Integer, ValidTypes.Boolean]:
-                self.code += '\tireturn\n'
-                self.stack_size.decrease_stack(1)
-            elif f_type == ValidTypes.Float64:
-                self.code += '\tdreturn\n'
-                self.stack_size.decrease_stack(2)
-            elif f_type == ValidTypes.String:
-                self.code += '\tareturn\n'
-                self.stack_size.decrease_stack(1)
-            else:
-                self.code += '\treturn\n'
+            self.code += '\treturn\n'
 
     def visitReturn_statement(self, ctx: CoBaParser.Return_statementContext):
         self.debug_info(ctx, 'return')
