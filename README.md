@@ -284,7 +284,7 @@ temp -> RegisterId 2
 ```
 Every Variable defines a Node.
 The Adjacency List defines the Edges between given Nodes.
-Such the Register-Interference-Graph is defined.
+Thus the Register-Interference-Graph is defined.
 ```bash
 Adjacency List:
    a: {'temp', 'b'}
