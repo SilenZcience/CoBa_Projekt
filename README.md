@@ -161,7 +161,7 @@ stups_compiler.py [-h] [-compile IN_FILE] [-liveness IN_FILE] [-output OUT_FILE]
     - run:
 
     ```console
-    java -cp <classpath> <file.class>
+    java <file.class>
     ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -218,7 +218,7 @@ Status: generating successful.
 > java -jar ./jasmin.jar test.j
 Generated: test.class
 
-> java -cp . test
+> java test
 Fibonacci:
 1
 2
