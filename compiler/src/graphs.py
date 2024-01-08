@@ -213,6 +213,6 @@ class CFGraph:
             s_str += f"{str(node):<32} interference: {self.interferences[i]}\n"
         s_str += '\nAdjacency List:\n'
         for n_id, n_adj in self.adj.items():
-            s_str += f"{n_id:>3}: {n_adj}\n"
+            s_str += f"{n_id:>3}: {n_adj if n_adj else '{}'}\n"
         s_str += '-------------------------\n'
         return s_str
