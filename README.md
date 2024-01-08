@@ -25,6 +25,15 @@
       <li><a href="#usage">Usage</a></li>
          <ul>
             <li><a href="#arguments">Arguments</a></li>
+            <li><a href="#execution">Execution</a></li>
+         </ul>
+      <li><a href="#examples">Examples</a></li>
+         <ul>
+            <li><a href="#compiling">Compiling</a></li>
+            <li><a href="#liveness">Liveness</a></li>
+            <ul>
+                <li><a href="#explanation">Explanation</a></li>
+            </ul>
          </ul>
       <li><a href="#contact">Contact</a></li>
    </ol>
@@ -107,7 +116,7 @@ Expected Directory Structure:
     python -m pip install antlr4-python3-runtime~=4.13.1
     ```
 
-- Generate the ANTLR Lexer -and Parser:
+- Generate the ANTLR Lexer -and Parser (aswell as a Visitor and Listener):
     - run (from the 'CoBa_Projekt' direcory):
 
     ```console
@@ -138,7 +147,7 @@ stups_compiler.py [-h] [-compile IN_FILE] [-liveness IN_FILE] [-output OUT_FILE]
     - specify the output OUT_FILE used for compilation.
     - default is the input-file with a .j extension.
 - -debug
-    - show additional debug information.
+    - show additional debug information (e.g. SymbolTable, ControlFlowGraph).
 
 ### Execution
 
@@ -152,8 +161,142 @@ stups_compiler.py [-h] [-compile IN_FILE] [-liveness IN_FILE] [-output OUT_FILE]
     - run:
 
     ```console
-    java -cp . <file.class>
+    java -cp <classpath> <file.class>
     ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Examples
+
+```julia
+# Example Code (test.jl):
+function x()
+    println("x")
+end
+
+function main()
+    a::Integer = 1
+        b::Integer = 1
+        temp::Integer = 0
+    println("Fibonacci:")
+        while a < 144
+            temp = b
+                b = a + b
+                a = temp
+                println(a)
+        end
+    println("Calling other functions:")
+    println(test_function("a"))
+    x()
+end
+
+function test_function(x::String)::Float64
+    a::Float64 = 20/3
+    a = 5
+    if (5/5+5*2 > 2)
+        println(a)
+    end
+    return a
+end
+
+main()
+```
+
+### Compiling
+
+```console
+> python -m compiler -compile test.jl
+Status: reading file test.jl
+Status: parsing...
+Status: parsing successful.
+Status: typechecking...
+Status: typechecking successful.
+Status: generating...
+Status: writing file test.j
+Status: generating successful.
+
+> java -jar ./jasmin.jar test.j
+Generated: test.class
+
+> java -cp . test
+Fibonacci:
+1
+2
+3
+5
+8
+13
+21
+34
+55
+89
+144
+Calling other functions:
+5.0
+5.0
+x
+```
+
+### Liveness
+
+```console
+> python -m compiler -liveness test.jl
+...
+Status: liveness result:
+
+Function: x
+Registers: 0
+-------------------------
+-------------------------
+
+Function: main
+Registers: 3
+-------------------------
+Nodes (#3) [Name(Register)]:
+a(0),b(1),temp(2)
+Adjacency List:
+   a: {'temp', 'b'}
+   b: {'temp', 'a'}
+temp: {'a', 'b'}
+-------------------------
+
+Function: test_function
+Registers: 1
+-------------------------
+Nodes (#2) [Name(Register)]:
+x(0),a(0)
+Adjacency List:
+x: {}
+a: {}
+-------------------------
+```
+
+#### Explanation
+
+Every Variable is assigned a Register, shown within the Parentheses.
+```bat
+a(0),b(1),temp(2)
+
+defines:
+a    -> RegisterId 0
+b    -> RegisterId 1
+temp -> RegisterId 2
+```
+Every Variable defines a Node.
+The Adjacency List defines the Edges between given Nodes.
+Such the Register-Interference-Graph is defined.
+```bash
+Adjacency List:
+   a: {'temp', 'b'}
+   b: {'temp', 'a'}
+temp: {'a', 'b'}
+
+defines the Graph:
+   temp
+  /    \
+ /      \
+a ------ b
+```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
