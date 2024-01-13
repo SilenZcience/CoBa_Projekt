@@ -57,6 +57,9 @@ antlr-4.13.1-complete
 
 Julia:
 julia version 1.9.4
+
+Jasmin:
+Jasmin version: v2.4
 ```
 
 ### Prerequisites
