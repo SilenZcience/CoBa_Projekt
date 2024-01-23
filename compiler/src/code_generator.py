@@ -298,14 +298,22 @@ class CodeGenerator(CoBaParserVisitor):
         # generate the argument type for the statement
         if ctx.expression() is not None:
             e_type = self.visit(ctx.expression())
+            # convert boolean to literal 'true'/'false'
+            if e_type == ValidTypes.Boolean:
+                l_id: str = next(self.label_gen)
+                self.code += f"\tifne label_{l_id}_if\n"
+                self.code += '\tldc "false"\n'
+                self.code += f"\tgoto label_{l_id}_end\nlabel_{l_id}_if:\n"
+                self.code += '\tldc "true"\n'
+                self.code += f"label_{l_id}_end:\n\n"
             self.code += '\tinvokevirtual java/io/PrintStream/println('
-            if e_type in [ValidTypes.Integer, ValidTypes.Boolean]:
+            if e_type == ValidTypes.Integer:
                 self.code += 'I'
                 self.stack_size.decrease_stack(1)
             elif e_type == ValidTypes.Float64:
                 self.code += 'D'
                 self.stack_size.decrease_stack(2)
-            elif e_type == ValidTypes.String:
+            elif e_type in [ValidTypes.Boolean, ValidTypes.String]:
                 self.code += 'Ljava/lang/String;'
                 self.stack_size.decrease_stack(1)
         else:
